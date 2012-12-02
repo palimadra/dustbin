@@ -10,3 +10,20 @@ def get_blogs(name):
     """
 
     return ["blog1", "blog2", name]
+
+
+def new_blog(name, public):
+
+    pass
+
+
+class Blog:
+
+    def __init__(self, name, public):
+
+        self.name = name
+        self.public = public
+
+    @property
+    def url(self):
+        return 
