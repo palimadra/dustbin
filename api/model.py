@@ -15,17 +15,17 @@ def get_blogs(name):
     return ["blog1", "blog2", name]
 
 
-def new_blog(name, public, subdomain):
+def new_blog(name, subdomain, public):
 
     if Blog.valid_subdomain(subdomain):
-        return Blog(name, public, subdomain)
+        return Blog(name, subdomain, public)
     else:
         raise Exception("The subdomain was invalid")
     
 
 class Blog:
 
-    def __init__(self, name, public, subdomain):
+    def __init__(self, name, subdomain, public):
 
         self.name = name
         self.public = public

@@ -43,8 +43,8 @@ class Blogs:
 
         if form.validates():
             blog = model.new_blog(form.d.name,
-                                  form.d.public,
-                                  form.d.subdomain)
+                                  form.d.subdomain,
+                                  form.d.public)
             web.ctx.status = '201 Created'
             web.header('Location', blog.url)
             web.header('Content-Type', 'text/html')

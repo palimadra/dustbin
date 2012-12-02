@@ -21,8 +21,8 @@ class TestBlog:
                               params={"name": "bob's blog",
                                        "subdomain": "bob",
                                        "public" : True})
-#        assert_equal(r.status, 201)
-        assert True
+        
+        assert_equal(r.status, 201)
 
     
 
