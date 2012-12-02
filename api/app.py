@@ -49,7 +49,7 @@ class Blogs:
             return ""
         else:
             #TODO: more useful error message
-            web.raise.internalerror(message="Something went wrong.")
+            raise web.internalerror(message="Something went wrong.")
 
 
 app = web.application(urls, globals())

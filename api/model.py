@@ -1,4 +1,4 @@
-import config
+import spyglass.config
 import re
 
 subdomainre = re.compile("[a-zA-Z0-9]+")
@@ -47,4 +47,4 @@ class Blog:
 
     @property
     def url(self):
-        return self.subdomain + "." config.domain
+        return self.subdomain + "." + config.domain
