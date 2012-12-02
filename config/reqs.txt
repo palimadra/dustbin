@@ -1,4 +1,5 @@
 Jinja2==2.6
+Paste==1.7.5.1
 chardet==2.1.1
 ipython==0.13.1
 lamson==1.1

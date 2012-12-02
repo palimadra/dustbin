@@ -1,1 +1,2 @@
-import app, model
+import model
+from app import app
