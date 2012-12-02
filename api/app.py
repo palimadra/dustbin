@@ -13,10 +13,16 @@ class Blogs:
         web.form.Textbox('name', web.form.notnull, 
             size=140,
             description="Blog name"),
+            
+        web.form.Textbox('subdomain', web.form.notnull, 
+            size=63,
+            description="Subdomain for the blog"),
+
         web.form.Checkbox('public', web.form.Checkbox, 
             description="Public or private"),
         web.form.Button('Create new blog'),
     )
+    
 
     def GET(self, name):
         """
@@ -27,6 +33,7 @@ class Blogs:
         return json.dumps(blogs)
 
 
+
     def POST(self, name):
         """
         Start a new blog.
@@ -34,7 +41,9 @@ class Blogs:
         form = self.form()
 
         if form.validates():
-            blog = model.new_blog(form.d.name, form.d.public)
+            blog = model.new_blog(form.d.name,
+                                  form.d.public,
+                                  form.d.subdomain)
             web.ctx.status = '201 Created'
             web.header('Location', blog.url)
             return ""
