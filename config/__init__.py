@@ -2,4 +2,4 @@
 try:
     from prefs import *
 except Exception as e:
-    pass
+    domain = "test.com"

@@ -1,7 +1,7 @@
-import spyglass.config
+import spyglass.config as config
 import re
 
-subdomainre = re.compile("[a-zA-Z0-9]+")
+subdomainre = re.compile("^[a-zA-Z0-9]+$")
 
 def get_blogs(name):
 
@@ -31,10 +31,11 @@ class Blog:
         self.public = public
         self.subdomain = subdomain
 
+
     @staticmethod
     def valid_subdomain(subdomain):
-        
-        if len(config.domain) > 63:
+
+        if len(subdomain) > 63:
             return False
         
         elif len(config.domain) + len(subdomain) > 255:
@@ -42,6 +43,7 @@ class Blog:
         
         elif not subdomainre.match(subdomain):
             return False
+        
         else:
             return True
 
