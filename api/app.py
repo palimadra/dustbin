@@ -21,7 +21,7 @@ def load_sqla(handler):
         raise
     finally:
         web.ctx.db.commit()
-        web.ctx.db.remove()
+        Session.remove()
 
 app = web.application(urls, locals())
 app.add_processor(load_sqla)
