@@ -1,5 +1,8 @@
 import spyglass.config as config
 import re
+from sqlalchemy import create_engine
+
+#engine = create_engine('postgresql://scott:tiger@localhost/', echo=True)
 
 subdomainre = re.compile("^[a-zA-Z0-9]+$")
 
@@ -53,4 +56,4 @@ class Blog:
 
     @property
     def url(self):
-        return self.subdomain + "." + config.domain
+        return self.subdomain + "." + config.domain + "." + self.name
