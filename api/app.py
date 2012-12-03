@@ -9,7 +9,7 @@ urls = (
 
 def load_sqla(handler):
     
-    web.ctx.db = Session
+    web.ctx.db = Session()
     
     try:
         return handler()
@@ -21,6 +21,7 @@ def load_sqla(handler):
         raise
     finally:
         web.ctx.db.commit()
+        web.ctx.db.remove()
 
 app = web.application(urls, locals())
 app.add_processor(load_sqla)
