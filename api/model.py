@@ -1,11 +1,6 @@
 import spyglass.config as config
 import re
-from sqlalchemy import Column, Integer, String, create_engine
-
-engine = create_engine('postgresql://sean:C3rb3russ@localhost/postgres', echo=True)
-engine.execute("select 1").scalar()
-#Session = sessionmaker(bind=some_engine)
-#session = Session()
+import orm
 
 subdomainre = re.compile("^[a-zA-Z0-9]+$")
 
