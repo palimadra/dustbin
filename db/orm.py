@@ -26,3 +26,17 @@ class User(Base):
 
     def __repr__(self):
         return "<User('%s','%s', '%s')>" % (self.name, self.fullname, self.password)
+    
+
+class Blog(Base):
+    __tablename__ = 'blogs'
+    
+    id = Column(Integer, primary_key=True)
+    name = Column(String)
+
+    def __init__(self, name, fullname, password):
+        self.name = name
+
+    def __repr__(self):
+        return "<Blog('%s','%s'')>" % (self.id, self.name)
+
