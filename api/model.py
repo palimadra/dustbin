@@ -1,6 +1,7 @@
 import spyglass.config as config
+import spyglass.db.orm as orm
 import re
-import orm
+
 
 subdomainre = re.compile("^[a-zA-Z0-9]+$")
 

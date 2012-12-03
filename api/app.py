@@ -1,10 +1,29 @@
 import web
 import model
 import json
+from spyglass.db.orm import Session
 
 urls = (
     '/(.*)/blogs', 'Blogs',
 )
+
+def load_sqla(handler):
+    
+    web.ctx.db = Session
+    
+    try:
+        return handler()
+    except web.HTTPError:
+       web.ctx.db.commit()
+       raise
+    except:
+        web.ctx.db.rollback()
+        raise
+    finally:
+        web.ctx.db.commit()
+
+app = web.application(urls, locals())
+app.add_processor(load_sqla)
 
 
 class Blogs:
@@ -53,8 +72,6 @@ class Blogs:
             #TODO: more useful error message
             raise web.internalerror(message="Something went wrong.")
 
-
-app = web.application(urls, globals())
 
 if __name__ == '__main__':
     app.run()
