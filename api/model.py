@@ -17,6 +17,10 @@ def get_blogs(name):
 
 def new_blog(name, subdomain, public):
 
+    """
+    Create a new blog. Persist it in
+    the database.
+    """
     if Blog.valid_subdomain(subdomain):
         return Blog(name, subdomain, public)
     else:

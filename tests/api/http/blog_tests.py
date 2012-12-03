@@ -1,7 +1,7 @@
 from paste.fixture import TestApp
 from nose.tools import *
 from spyglass.api import app
-
+from spyglass.api.model import new_blog
 
 class TestBlog:
 
@@ -17,12 +17,19 @@ class TestBlog:
     
 
     def test_new_blog(self):
+        name = "bob's blog"
+        subdomain = "bob"
+        public = True
+
+        blog = new_blog(name, subdomain, public)
         r = self.testApp.post(u'/sean/blogs',
-                              params={"name": "bob's blog",
-                                       "subdomain": "bob",
-                                       "public" : True})
+                              params={"name": name,
+                                       "subdomain": subdomain,
+                                       "public" : public})
+
         
         assert_equal(r.status, 201)
+        assert_equal(blog.url, dict(r.headers)["Location"])
 
     
 
