@@ -1,5 +1,4 @@
-import spyglass.config as config
-import spyglass.db.orm as orm
+import dustbin.config as config
 import re
 
 

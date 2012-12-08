@@ -1,4 +1,4 @@
-import pykt
+import dustbin.config as config
 import tornado.auth
 import tornado.httpserver
 import tornado.ioloop
@@ -16,14 +16,13 @@ class Application(tornado.web.Application):
         ]
         settings = dict(
             cookie_secret="^gh\x06t\x08\xd8m2\x01\xf83\xfeu\xd3\xa9I\xcc6\x8d",
-            autoescape=None,
+            autoescape=None
         )
         tornado.web.Application.__init__(self, handlers, **settings)
 
         # Have one global connection to the blog DB across all handlers
-        self.db = pykt.KyotoTycoon()
-        self.db.open()
-
+        self.db = config.get_db()
+        
 
 class BaseHandler(tornado.web.RequestHandler):
     @property
