@@ -1,14 +1,13 @@
 Jinja2==2.6
 Paste==1.7.5.1
-SQLAlchemy==0.7.9
 chardet==2.1.1
 ipython==0.13.1
-lamson==1.1
 lockfile==0.9.1
 mock==1.0.1
 nose==1.2.1
-psycopg2==2.4.5
 python-daemon==1.6
+pytyrant==1.1.17
+pyzmq==2.2.0.1
 readline==6.2.4.1
-web.py==0.37
+tornado==2.4.1
 wsgiref==0.1.2
