@@ -5,36 +5,11 @@ import re
 
 subdomainre = re.compile("^[a-zA-Z0-9]+$")
 
-def get_blogs(name):
+class Account:
 
-    """
-    Returns some meta data about the blogs for the
-    given name.
-    1. The title of the blog
-    2. The url of the blog
-    """
-
-    return ["blog1", "blog2", name]
-
-
-def new_blog(name, subdomain, public):
-
-    """
-    Create a new blog. Persist it in
-    the database.
-    """
-    if Blog.valid_subdomain(subdomain):
-        return Blog(name, subdomain, public)
-    else:
-        raise Exception("The subdomain was invalid")
-    
-
-class Blog:
-
-    def __init__(self, name, subdomain, public):
+    def __init__(self, name, subdomain):
 
         self.name = name
-        self.public = public
         self.subdomain = subdomain
 
 
@@ -55,4 +30,4 @@ class Blog:
 
     @property
     def url(self):
-        return self.subdomain + "." + config.domain + "." + self.name
+        return self.subdomain + "." + config.domain

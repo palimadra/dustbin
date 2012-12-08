@@ -1,80 +1,91 @@
-import web
-import model
-import json
-from spyglass.db.orm import Session
+import pykt
+import tornado.auth
+import tornado.httpserver
+import tornado.ioloop
+import tornado.options
+import tornado.web
 
-urls = (
-    '/(.*)/blogs', 'Blogs',
-)
+from tornado.options import define, options
+define("port", default=8888, help="run on the given port", type=int)
 
-def load_sqla(handler):
-    
-    web.ctx.db = Session()
-    
-    try:
-        return handler()
-    except web.HTTPError:
-       web.ctx.db.commit()
-       raise
-    except:
-        web.ctx.db.rollback()
-        raise
-    finally:
-        web.ctx.db.commit()
-        Session.remove()
+class Application(tornado.web.Application):
+    def __init__(self):
+        handlers = [
+            (r"/", HomeHandler),
+            (r"/auth/login", AuthLoginHandler),
+            (r"/auth/logout", AuthLogoutHandler),
+            (r"/test", TestHandler)
+        ]
+        settings = dict(
+            cookie_secret="^gh\x06t\x08\xd8m2\x01\xf83\xfeu\xd3\xa9I\xcc6\x8d",
+            login_url="/auth/login",
+            autoescape=None,
+        )
+        tornado.web.Application.__init__(self, handlers, **settings)
 
-app = web.application(urls, locals())
-app.add_processor(load_sqla)
-
-
-class Blogs:
-
-    form = web.form.Form(
-        web.form.Textbox('name', web.form.notnull, 
-            size=140,
-            description="Blog name"),
-            
-        web.form.Textbox('subdomain', web.form.notnull, 
-            size=63,
-            description="Subdomain for the blog"),
-
-        web.form.Checkbox('public', 
-            description="Public or private"),
-            
-        web.form.Button('Create new blog'),
-    )
-    
-
-    def GET(self, name):
-        """
-        Return the list of blogs this person owns.
-        """
-        web.header('Content-Type', 'application/json')
-        blogs = model.get_blogs(name)
-        return json.dumps(blogs)
+        # Have one global connection to the blog DB across all handlers
+        self.db = pykt.KyotoTycoon()
+        self.db.open()
 
 
+class BaseHandler(tornado.web.RequestHandler):
+    @property
+    def db(self):
+        return self.application.db
 
-    def POST(self, name):
-        """
-        Start a new blog.
-        """
-        form = self.form()
-
-        if form.validates():
-            blog = model.new_blog(form.d.name,
-                                  form.d.subdomain,
-                                  form.d.public)
-            web.ctx.status = '201 Created'
-            web.header('Location', blog.url)
-            web.header('Content-Type', 'text/html')
-            return ""
-        else:
-            #TODO: more useful error message
-            raise web.internalerror(message="Something went wrong.")
+    def get_current_user(self):
+        user_id = self.get_secure_cookie("user")
+        if not user_id: return None
+        return self.db.get(user_id)
 
 
-if __name__ == '__main__':
-    app.run()
+class HomeHandler(BaseHandler):
+    def get(self):
+        self.write("blah")
+
+class TestHandler(BaseHandler):
+    @tornado.web.authenticated
+    def get(self):
+        self.write("blah")
+
+
+class AuthLoginHandler(BaseHandler, tornado.auth.GoogleMixin):
+    @tornado.web.asynchronous
+    def get(self):
+        if self.get_argument("openid.mode", None):
+            self.get_authenticated_user(self.async_callback(self._on_auth))
+            return
+        self.authenticate_redirect()
+
+    def _on_auth(self, user):
+
+        if not user:
+            raise tornado.web.HTTPError(500, "Google auth failed")
+        email = user["email"].encode("utf-8")
+        name = self.db.get(email)
+        if not name:
+            name = user["name"].encode("utf-8")
+            self.db.set(email, name)
+
+        self.set_secure_cookie("user", email)
+        self.redirect(self.get_argument("next", "/"))
+
+
+class AuthLogoutHandler(BaseHandler):
+    def get(self):
+        self.clear_cookie("user")
+        self.redirect(self.get_argument("next", "/"))
+
+
+def main():
+    tornado.options.parse_command_line()
+    http_server = tornado.httpserver.HTTPServer(Application())
+    http_server.listen(options.port)
+    tornado.ioloop.IOLoop.instance().start()
+
+
+if __name__ == "__main__":
+    main()
+
 
 
