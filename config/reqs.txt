@@ -5,8 +5,8 @@ ipython==0.13.1
 lockfile==0.9.1
 mock==1.0.1
 nose==1.2.1
+pykt==0.0.2
 python-daemon==1.6
-pytyrant==1.1.17
 pyzmq==2.2.0.1
 readline==6.2.4.1
 tornado==2.4.1
