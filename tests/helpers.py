@@ -18,6 +18,7 @@ def get_user_cookie(secret=None, name=None, value=None):
 
 
 
-def set_user_cookie(request, secret=None, name=None, value=None):
-    request.headers.add("Set-Cookie", "user=%s" % get_user_cookie(secret, name, value))
+def set_user_cookie(headers, secret=None, name=None, value=None):
+    headers.add("Set-Cookie", "user=%s" % get_user_cookie(secret, name, value))
+    return headers
 
