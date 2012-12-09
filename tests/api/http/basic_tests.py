@@ -26,10 +26,6 @@ class FeedTest(AsyncHTTPTestCase):
         return Application()
 
 
-    def test_get(self):
-        response = self.fetch(helpers.url("/posts"))
-        assert response.code == 200
-
     def blah_test_post(self):
         post = model.Post("text is something like this.\nplus a paragraph", title="title")
         headers = helpers.set_user_cookie(HTTPHeaders({"Content-Type" : "application/json"}))

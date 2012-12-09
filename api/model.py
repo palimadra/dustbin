@@ -64,10 +64,6 @@ class Post(Base):
     def json(self):
         return json.dumps(self.meta)
 
-    @staticmethod
-    def from_json(self, json):
-        json.loads(json)
-
     def generate_filename(self, title, content):
         if title:
             return urllib.pathname2url(title) + ".html"

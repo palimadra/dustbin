@@ -5,11 +5,26 @@ import tornado.httpserver
 import tornado.ioloop
 import tornado.options
 import tornado.web
+from dustbin.api.model import Post
+
+
+def authorized(fn):
+    def wrapped(*args, **kwargs):
+        self = args[0]
+        # TODO: use self.current_user to authorize,
+        # for now everything is good
+        if Truegit:
+            fn(*args, **kwargs)
+        else:
+            raise tornado.web.HTTPError(403)
+            
+    return wrapped
+
 
 class Application(tornado.web.Application):
     def __init__(self):
         handlers = [
-            (r"/([^/]+)/private/posts", PostsHandler)
+            (r"/(?P<subdomain>[^/]+)/private/posts", PostsHandler)
         ]
         settings = config.appsettings
         tornado.web.Application.__init__(self, handlers, **settings)
@@ -32,6 +47,13 @@ class BaseHandler(tornado.web.RequestHandler):
 
 class PostsHandler(BaseHandler):
 
+
+    @authorized
     @tornado.web.authenticated
     def post(self, subdomain):
-        self.request.body
+        post = Post(**json.loads(self.request.body))
+
+
+
+        
+
