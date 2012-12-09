@@ -20,6 +20,15 @@ except Exception as e:
         def set(self, key, value):
             self.dict[key] = value
 
+        def open(self):
+            pass
+
+        def close(self):
+            pass
+
+        def clear(self):
+            self.dict = {}
+
     domain = "test.com"
     appsettings = dict(
             cookie_secret="some random number here.",
