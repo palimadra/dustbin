@@ -13,7 +13,7 @@ def authorized(fn):
         self = args[0]
         # TODO: use self.current_user to authorize,
         # for now everything is good
-        if Truegit:
+        if True:
             fn(*args, **kwargs)
         else:
             raise tornado.web.HTTPError(403)
@@ -47,11 +47,13 @@ class BaseHandler(tornado.web.RequestHandler):
 
 class PostsHandler(BaseHandler):
 
-
     @authorized
     @tornado.web.authenticated
     def post(self, subdomain):
         post = Post(**json.loads(self.request.body))
+        post.save()
+        self.set_header("Location", post.url)
+        self.set_status(201)
 
 
 

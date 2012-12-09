@@ -44,13 +44,16 @@ class Post(Base):
 
         Base.__init__(self, meta)
 
+
     @property
     def date(self):
         return dateutil.parser.parse(self.meta["date"])
+    
 
     @date.setter
     def date(self, value):
         self.meta["date"] = value.toisoformat()
+
 
     @property
     def url(self):
@@ -64,13 +67,14 @@ class Post(Base):
     def json(self):
         return json.dumps(self.meta)
 
+    def save(self):
+        pass
+
     def generate_filename(self, title, content):
         if title:
             return urllib.pathname2url(title) + ".html"
         else:
             return sha.sha(content).digest() + ".html"
-
-        
 
         
 class Account:
