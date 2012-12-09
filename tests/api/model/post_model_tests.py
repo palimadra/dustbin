@@ -39,3 +39,15 @@ def test_post_title():
     post = Post(content, title=title)
     assert post.title == title
 
+
+def test_post_save():
+
+    """
+    saving a post should:
+    1. update the feed
+    2. create a json entry at the url
+    3. create an html fragment entry at the url.html
+    """
+    
+    content = "check it"
+

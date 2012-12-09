@@ -20,13 +20,13 @@ def tearDown():
     db.close()
 
 
-class FeedTest(AsyncHTTPTestCase):
+class NewPostTest(AsyncHTTPTestCase):
     
     def get_app(self):
         return Application()
 
 
-    def blah_test_post(self):
+    def test_post(self):
         post = model.Post("text is something like this.\nplus a paragraph", title="title")
         headers = helpers.set_user_cookie(HTTPHeaders({"Content-Type" : "application/json"}))
         response = self.fetch(helpers.url("/posts"),
@@ -36,6 +36,35 @@ class FeedTest(AsyncHTTPTestCase):
         
         assert response.headers["Location"] == post.url
         assert response.code == 201
+
+
+    def test_bad_markdown(self):
+        pass
+
+
+    def test_post_to_lense(self):
+        """
+        If you post to a lense, make sure everything
+        is created in the right spot in the database
+
+        e.g. post /sean/posts/private/family
+        versus post /sean/posts/public/computers
+        """
+        
+        pass
+
+
+class ReadPostTest(AsyncHTTPTestCase):
+
+    def get_app(self):
+        return Application()
+    
+    def test_get_json(self):
+        pass
+
+    def test_get_html(self):
+        pass
+
         
         
 

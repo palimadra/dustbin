@@ -72,9 +72,9 @@ class Post(Base):
 
     def generate_filename(self, title, content):
         if title:
-            return urllib.pathname2url(title) + ".html"
+            return urllib.pathname2url(title)
         else:
-            return sha.sha(content).digest() + ".html"
+            return sha.sha(content).digest()
 
         
 class Account:
