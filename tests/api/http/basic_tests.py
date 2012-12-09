@@ -1,3 +1,4 @@
+import dustbin.config as config
 import dustbin.api.model as model
 import dustbin.tests.helpers as helpers
 import tornado.web as web
@@ -8,27 +9,29 @@ from tornado.testing import AsyncHTTPTestCase
 from tornado.httpclient import HTTPRequest
 from tornado.httputil import HTTPHeaders
 
+db = config.get_db()
+
+def setUp():
+    db.open()
+
+def tearDown():
+    db.clear()
+    db.close()
+
 
 class FeedTest(AsyncHTTPTestCase):
     
     def get_app(self):
-        #return Application([('/', )])
         return Application()
 
     def test_post(self):
         post = model.Post("text is something like this.\nplus a paragraph", title="title")
         headers = helpers.set_user_cookie(HTTPHeaders({"Content-Type" : "application/json"}))
-        response = self.fetch("/sean/posts",
+        response = self.fetch(helpers.url("/posts"),
                    method="POST",
                    body=post.json,
                    headers=headers)
         
-#        request = HTTPRequest('/sean/posts',
-#                              method="POST",
-#                              body=post.json,
-#                              headers=HTTPHeaders({"Content-Type" : "application/json"}))
-#        helpers.set_user_cookie(request)
-#        response = self.http_client.fetch(request, self.stop)
 
         assert response.headers["Location"] == post.url
         assert response.code == 201
