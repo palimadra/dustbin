@@ -14,10 +14,7 @@ class Application(tornado.web.Application):
             (r"/", HomeHandler),
             (r"/test", TestHandler)
         ]
-        settings = dict(
-            cookie_secret="^gh\x06t\x08\xd8m2\x01\xf83\xfeu\xd3\xa9I\xcc6\x8d",
-            autoescape=None
-        )
+        settings = config.appsettings
         tornado.web.Application.__init__(self, handlers, **settings)
 
         # Have one global connection to the blog DB across all handlers
