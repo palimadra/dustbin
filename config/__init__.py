@@ -1,4 +1,8 @@
-#TODO: should read this from some config file
+"""
+Define a prefs.py file that defines
+values below. Put it in the config folder.
+"""
+
 try:
     from prefs import *
 except Exception as e:
@@ -29,11 +33,15 @@ except Exception as e:
         def clear(self):
             self.dict = {}
 
+
+    #define these values in your prefs.py
+
     domain = "test.com"
     appsettings = dict(
             cookie_secret="some random number here.",
             autoescape=None
         )
 
+    _db = DictWrapper()
     def get_db():
-        return DictWrapper()
+        return _db

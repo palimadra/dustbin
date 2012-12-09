@@ -9,24 +9,41 @@ from datetime import datetime as dt
 
 subdomainre = re.compile("^[a-zA-Z0-9]+$")
 
+class Base:
 
-class Post:
+    def __init__(self, meta=None):
+        if meta:
+            self.meta = meta
+        else:
+            self.meta = {}
+
+    def __getattr__(self, name):
+        if self.meta.has_key(name):
+            return self.meta[name]
+        else:
+            raise AttributeError
+
+class Post(Base):
 
     def __init__(self,
                  content = "",
                  title = "",
-                 date = None):
+                 date = None,
+                 filename = ""):
         
-        self.content = content
-        self.title = title
-
         if not date:
             date = dt.now().isoformat()
+
+        if not filename:
+            filename = self.generate_filename(title, content)
             
-        self.meta = {"title" : title,
+        meta = {"title" : title,
                      "content" : content,
-                     "date" : date}
-        
+                     "date" : date,
+                     "filename" : filename}
+
+        Base.__init__(self, meta)
+
     @property
     def date(self):
         return dateutil.parser.parse(self.meta["date"])
@@ -44,15 +61,20 @@ class Post:
                    self.filename])
 
     @property
-    def filename(self):
-        if self.title:
-            return urllib.pathname2url(self.title) + ".html"
-        else:
-            return sha.sha(self.content).digest() + ".html"
-
-    @property
     def json(self):
         return json.dumps(self.meta)
+
+    @staticmethod
+    def from_json(self, json):
+        json.loads(json)
+
+    def generate_filename(self, title, content):
+        if title:
+            return urllib.pathname2url(title) + ".html"
+        else:
+            return sha.sha(content).digest() + ".html"
+
+        
 
         
 class Account:

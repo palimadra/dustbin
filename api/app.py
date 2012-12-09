@@ -1,4 +1,5 @@
 import dustbin.config as config
+import json
 import tornado.auth
 import tornado.httpserver
 import tornado.ioloop
@@ -8,8 +9,7 @@ import tornado.web
 class Application(tornado.web.Application):
     def __init__(self):
         handlers = [
-            (r"/([^/]+)/private/posts", PostsHandler),
-            (r"/login", LoginHandler)
+            (r"/([^/]+)/private/posts", PostsHandler)
         ]
         settings = config.appsettings
         tornado.web.Application.__init__(self, handlers, **settings)
@@ -19,6 +19,7 @@ class Application(tornado.web.Application):
         
 
 class BaseHandler(tornado.web.RequestHandler):
+    
     @property
     def db(self):
         return self.application.db
@@ -29,16 +30,8 @@ class BaseHandler(tornado.web.RequestHandler):
         return self.db.get(user_id)
 
 
-class LoginHandler(BaseHandler):
-
-    def get(self):
-        self.set_secure_cookie("user", "sean")
-        self.write("logged in")
-
 class PostsHandler(BaseHandler):
-    
+
     @tornado.web.authenticated
-    def post(self):
-        print '!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'
-        print self.url
-        self.write("blah")
+    def post(self, subdomain):
+        self.request.body
