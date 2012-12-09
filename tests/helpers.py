@@ -6,7 +6,7 @@ USERNAME = "sean"
 
 def get_user_cookie(secret=None, name=None, value=None):
     if not secret:
-        secret = config.app_settings["cookie_secret"]
+        secret = config.appsettings["cookie_secret"]
 
     if not name:
         name = "user"

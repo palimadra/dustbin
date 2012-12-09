@@ -35,7 +35,7 @@ def test_post_title():
     content = "sweet content right here"
     title = "awesome title"
     post = Post(content)
-    assert post.title == None
+    assert post.title == ""
     post = Post(content, title=title)
     assert post.title == title
 

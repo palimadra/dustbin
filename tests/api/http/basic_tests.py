@@ -4,8 +4,9 @@ import tornado.web as web
 
 from dustbin.api import Application
 from nose.tools import *
-from tornado.testing import AsyncHTTPTestCase, AsyncHTTPClient
+from tornado.testing import AsyncHTTPTestCase
 from tornado.httpclient import HTTPRequest
+from tornado.httputil import HTTPHeaders
 
 
 class FeedTest(AsyncHTTPTestCase):
@@ -19,9 +20,9 @@ class FeedTest(AsyncHTTPTestCase):
         request = HTTPRequest('/sean/posts',
                               method="POST",
                               body=post.json,
-                              headers={"Content-Type" : "application/json"})
+                              headers=HTTPHeaders({"Content-Type" : "application/json"}))
         helpers.set_user_cookie(request)
-        response = self.http_client.fetch(request)
+        response = self.http_client.fetch(request, self.stop)
 
         assert response.headers["Location"] == post.url
         assert response.code == 201

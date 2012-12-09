@@ -1,4 +1,5 @@
 import dustbin.config as config
+import json
 import re
 import dateutil.parser
 import sha
@@ -11,12 +12,21 @@ subdomainre = re.compile("^[a-zA-Z0-9]+$")
 
 class Post:
 
-    def __init__(self, content, title=None):
+    def __init__(self,
+                 content = "",
+                 title = "",
+                 date = None):
+        
         self.content = content
         self.title = title
-        self.meta = {}
-        self.meta["date"] = dt.now().isoformat()
 
+        if not date:
+            date = dt.now().isoformat()
+            
+        self.meta = {"title" : title,
+                     "content" : content,
+                     "date" : date}
+        
     @property
     def date(self):
         return dateutil.parser.parse(self.meta["date"])
@@ -33,13 +43,16 @@ class Post:
                    self.date.year,
                    self.filename])
 
-
     @property
     def filename(self):
         if self.title:
             return urllib.pathname2url(self.title) + ".html"
         else:
             return sha.sha(self.content).digest() + ".html"
+
+    @property
+    def json(self):
+        return json.dumps(self.meta)
 
         
 class Account:
