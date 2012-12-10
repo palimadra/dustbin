@@ -2,7 +2,7 @@ import dustbin.config as config
 import json
 import re
 import dateutil.parser
-import sha
+import hashlib
 import urllib
 from datetime import datetime as dt
 
@@ -74,7 +74,8 @@ class Post(Base):
         if title:
             return urllib.pathname2url(title)
         else:
-            return sha.sha(content).digest()
+            hash = hashlib.sha256(content).digest()
+            return urllib.pathname2url(hash)
 
         
 class Account:

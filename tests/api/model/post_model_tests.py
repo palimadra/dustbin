@@ -3,7 +3,7 @@ from dustbin.api.model import Account, Post
 from datetime import datetime as dt
 
 import dustbin
-import sha
+import hashlib
 import urllib
 
 
@@ -17,7 +17,8 @@ def test_post_url():
     ordinal = 734845
     date = dt.fromordinal(ordinal)
     post.date = date
-    assert post.url == "12/8/2012/" + sha.sha(content).digest() + ".html", "oops, url was actually %s" % post.url
+    expected = "12/8/2012/" + urllib.pathname2url(hashlib.sha256(content).digest())
+    assert post.url == expected, "url was  %s expected %s" % (post.url, expected)
 
 
 def test_post_filename():
@@ -25,9 +26,10 @@ def test_post_filename():
     content = "some stuff in here"
     title = "this is awesome"
     post = Post(content)
-    assert post.filename == sha.sha(content).digest() + ".html"
+    expected = urllib.pathname2url(hashlib.sha256(content).digest())
+    assert post.filename == expected, "filename is %s expected %s" % (post.filename, expected)
     post = Post(content, title=title)
-    assert post.filename == urllib.pathname2url(title) + ".html"
+    assert post.filename == urllib.pathname2url(title)
 
 
 def test_post_title():
@@ -44,7 +46,7 @@ def test_post_save():
 
     """
     saving a post should:
-    1. update the feed
+    1. update feeds
     2. create a json entry at the url
     3. create an html fragment entry at the url.html
     """
