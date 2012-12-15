@@ -4,6 +4,7 @@ import re
 import dateutil.parser
 import hashlib
 import urllib
+import os.path as path
 
 from bleach import clean
 from markdown2 import markdown
@@ -84,11 +85,11 @@ class Post(Base):
 
     @property
     def url(self):
-        return self.prefix + "/" + "/".join([str(x) for x in
+        return path.join(*([self.prefix] + [str(x) for x in
                                         self.date.month,
                                         self.date.day,
                                         self.date.year,
-                                        self.filename])
+                                        self.filename]))
 
     @property
     def json(self):

@@ -30,7 +30,7 @@ class NewPostTest(AsyncHTTPTestCase):
     def test_post(self):
         post = model.Post("text is something like this.\nplus a paragraph",
                           title="title",
-                          prefix=helpers.SUBDOMAIN)
+                          prefix=helpers.url("/posts"))
         headers = helpers.set_user_cookie(HTTPHeaders({"Content-Type" : "application/json"}))
         response = self.fetch(helpers.url("/posts"),
                    method="POST",
@@ -59,19 +59,20 @@ class ReadPostTest(AsyncHTTPTestCase):
         return Application()
     
     def test_get_json(self):
-        assert False
+
+        post = model.Post("text is something like this.\nplus a paragraph",
+                          title="title here",
+                          prefix=helpers.SUBDOMAIN)
+        headers = helpers.set_user_cookie(HTTPHeaders({"Content-Type" : "application/json"}))
+        created = self.fetch(helpers.url("/posts"),
+                              method="POST",
+                              body=post.json,
+                              headers=headers)
+
+        url = created.headers["Location"]
+        headers = helpers.set_user_cookie(HTTPHeaders({"Content-Type" : "application/json"}))
+        response = self.fetch(url, headers=headers)
+        assert response.body == post.json
 
     def test_get_html(self):
         assert False
-
-        
-        
-
-    
-
-
-    
-
-
-
-
