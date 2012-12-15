@@ -21,7 +21,22 @@ def tearDown():
     db.close()
 
 
-class NewPostTest(AsyncHTTPTestCase):
+class BaseTest(AsyncHTTPTestCase):
+
+    def create_post(self):
+        post = model.Post("text is something like this.\nplus a paragraph",
+                          title="title here",
+                          prefix = helpers.url("/posts"))
+    
+        headers = helpers.set_user_cookie(HTTPHeaders({"Content-Type" : "application/json"}))
+        created = self.fetch(helpers.url("/posts"),
+                             method="POST",
+                             body=post.json,
+                             headers=headers)
+        return post, created
+
+
+class NewPostTest(BaseTest):
     
     def get_app(self):
         return Application()
@@ -45,7 +60,7 @@ class NewPostTest(AsyncHTTPTestCase):
         assert False
 
 
-class ReadPostTest(AsyncHTTPTestCase):
+class ReadPostTest(BaseTest):
 
     def get_app(self):
         return Application()
@@ -67,18 +82,3 @@ class ReadPostTest(AsyncHTTPTestCase):
         response = self.fetch(url, headers=headers)
         assert response.body == post.fragment
         
-
-    def create_post(self):
-        post = model.Post("text is something like this.\nplus a paragraph",
-                          title="title here",
-                          prefix = helpers.url("/posts"))
-    
-        headers = helpers.set_user_cookie(HTTPHeaders({"Content-Type" : "application/json"}))
-        created = self.fetch(helpers.url("/posts"),
-                             method="POST",
-                             body=post.json,
-                             headers=headers)
-        return post, created
-
-    
-
