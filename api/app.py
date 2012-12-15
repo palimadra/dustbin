@@ -51,6 +51,7 @@ class PostsHandler(BaseHandler):
     @tornado.web.authenticated
     def post(self, subdomain):
         post = Post(**json.loads(self.request.body))
+        post.prefix = subdomain
         post.save(db=self.db)
         self.set_header("Location", post.url)
         self.set_status(201)

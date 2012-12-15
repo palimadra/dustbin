@@ -28,6 +28,12 @@ class Base:
         else:
             raise AttributeError
 
+    def __setattr__(self, name, value):
+        if name in ['db', 'meta']:
+            self.__dict__[name] = value
+        else:
+            self.__dict__['meta'][name] = value
+
     def __eq__(self, other):
 
         for key, value in self.meta.items():

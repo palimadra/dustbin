@@ -28,7 +28,9 @@ class NewPostTest(AsyncHTTPTestCase):
 
 
     def test_post(self):
-        post = model.Post("text is something like this.\nplus a paragraph", title="title")
+        post = model.Post("text is something like this.\nplus a paragraph",
+                          title="title",
+                          prefix=helpers.SUBDOMAIN + "/")
         headers = helpers.set_user_cookie(HTTPHeaders({"Content-Type" : "application/json"}))
         response = self.fetch(helpers.url("/posts"),
                    method="POST",
