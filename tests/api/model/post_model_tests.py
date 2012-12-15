@@ -1,8 +1,9 @@
 from nose.tools import *
-import dustbin.config as config
 from dustbin.api.model import Account, Post
 from datetime import datetime as dt
+from dustbin.tests.helpers import *
 
+import dustbin.config as config
 import dustbin
 import hashlib
 import urllib

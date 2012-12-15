@@ -10,6 +10,7 @@ from tornado.httpclient import HTTPRequest
 from tornado.httputil import HTTPHeaders
 
 db = config.get_db()
+username = helpers.SUBDOMAIN
 
 def setUp():
     db.set(helpers.EMAIL, helpers.SUBDOMAIN)

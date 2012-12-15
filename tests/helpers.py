@@ -18,7 +18,6 @@ def get_user_cookie(secret=None, name=None, value=None):
     return web.create_signed_value(secret, name, value)
 
 
-
 def set_user_cookie(headers, secret=None, name=None, value=None):
     headers.add("Cookie", "user=%s" % get_user_cookie(secret, name, value))
     return headers

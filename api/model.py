@@ -44,7 +44,8 @@ class Base:
 class Post(Base):
 
     def __init__(self,
-                 content = "",
+                 content="",
+                 prefix="",
                  title = "",
                  date = None,
                  filename = "",
@@ -59,7 +60,8 @@ class Post(Base):
         meta = {"title" : title,
                      "content" : content,
                      "date" : date,
-                     "filename" : filename}
+                     "filename" : filename,
+                     "prefix" : prefix}
 
         Base.__init__(self, db=db, meta=meta)
 
@@ -76,11 +78,11 @@ class Post(Base):
 
     @property
     def url(self):
-        return "/".join([str(x) for x in
-                   self.date.month,
-                   self.date.day,
-                   self.date.year,
-                   self.filename])
+        return self.prefix + "/".join([str(x) for x in
+                                        self.date.month,
+                                        self.date.day,
+                                        self.date.year,
+                                        self.filename])
 
     @property
     def json(self):
@@ -113,9 +115,9 @@ class Post(Base):
         
 class Account:
 
-    def __init__(self, name, subdomain):
+    def __init__(self, email, subdomain):
 
-        self.name = name
+        self.email = email
         self.subdomain = subdomain
 
 
