@@ -84,7 +84,7 @@ class Post(Base):
 
     @property
     def url(self):
-        return self.prefix + "/".join([str(x) for x in
+        return self.prefix + "/" + "/".join([str(x) for x in
                                         self.date.month,
                                         self.date.day,
                                         self.date.year,

@@ -14,7 +14,7 @@ db = config.get_db()
 def test_post_url():
 
     content = "this is a short post" 
-    post = Post(content, prefix="sean/")
+    post = Post(content, prefix="sean")
     ordinal = 734845
     date = dt.fromordinal(ordinal)
     post.date = date
