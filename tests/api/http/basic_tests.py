@@ -37,11 +37,6 @@ class NewPostTest(AsyncHTTPTestCase):
         assert response.headers["Location"] == post.url
         assert response.code == 201
 
-
-    def test_bad_markdown(self):
-        pass
-
-
     def test_post_to_lense(self):
         """
         If you post to a lense, make sure everything
@@ -51,7 +46,7 @@ class NewPostTest(AsyncHTTPTestCase):
         versus post /sean/posts/public/computers
         """
         
-        pass
+        assert False
 
 
 class ReadPostTest(AsyncHTTPTestCase):
@@ -60,10 +55,10 @@ class ReadPostTest(AsyncHTTPTestCase):
         return Application()
     
     def test_get_json(self):
-        pass
+        assert False
 
     def test_get_html(self):
-        pass
+        assert False
 
         
         

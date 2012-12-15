@@ -29,6 +29,7 @@ class Base:
             if other.meta[key] != value:
                 return False
         return True
+            
 
 class Post(Base):
 

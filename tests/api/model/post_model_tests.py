@@ -54,6 +54,8 @@ def test_post_save():
     post.save()
     newpost = Post(**db.get(post.url))
     assert newpost == post
+    assert post.fragment == db.get(post.url + ".html")
+    
 
 def test_post_json():
     """
@@ -72,7 +74,15 @@ def test_load_from_db():
     Make sure we can save and rehydrate
     a post instance from the database.
     """
-    pass
-    
+    post = Post(content="test this out",
+                title="super awesome title")
+    post.save()
+    saved = db.get(post.url)
+    assert saved == post
 
 
+def test_bad_markdown():
+    """
+    Make sure bad markup can't be saved.
+    """
+    assert False
