@@ -23,13 +23,14 @@ def tearDown():
 
 class BaseTest(AsyncHTTPTestCase):
 
-    def create_post(self):
-        post = model.Post("text is something like this.\nplus a paragraph",
-                          title="title here",
-                          prefix = helpers.url("/posts"))
+    def create_post(self, url="/posts", post=None):
+        if not post:
+            post = model.Post("text is something like this.\nplus a paragraph",
+                              title="title here",
+                              prefix = helpers.url(url))
     
         headers = helpers.set_user_cookie(HTTPHeaders({"Content-Type" : "application/json"}))
-        created = self.fetch(helpers.url("/posts"),
+        created = self.fetch(helpers.url(url),
                              method="POST",
                              body=post.json,
                              headers=headers)
@@ -57,7 +58,18 @@ class NewPostTest(BaseTest):
         versus post /sean/posts/public/computers
         """
         
-        assert False
+        post, response = self.create_post(url="/posts/facebook")
+        url = response.headers["Location"]
+        print '!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'
+        print url
+        assert url.startswith(helpers.url("/posts/facebook")), "post was created in the wrong place"
+        headers = helpers.set_user_cookie(HTTPHeaders({"Content-Type" : "application/json"}))
+        response = self.fetch(url, headers=headers)
+        assert response.body == post.json
+        headers = helpers.set_user_cookie(HTTPHeaders({"Content-Type" : "text/html"}))
+        response = self.fetch(url, headers=headers)
+        assert response.body == post.fragment
+
 
 
 class ReadPostTest(BaseTest):
