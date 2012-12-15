@@ -62,7 +62,8 @@ class ReadPostTest(AsyncHTTPTestCase):
 
         post = model.Post("text is something like this.\nplus a paragraph",
                           title="title here",
-                          prefix=helpers.SUBDOMAIN)
+                          prefix = helpers.url("/posts"))
+        
         headers = helpers.set_user_cookie(HTTPHeaders({"Content-Type" : "application/json"}))
         created = self.fetch(helpers.url("/posts"),
                               method="POST",
