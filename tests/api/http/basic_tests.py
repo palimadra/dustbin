@@ -28,15 +28,7 @@ class NewPostTest(AsyncHTTPTestCase):
 
 
     def test_post(self):
-        post = model.Post("text is something like this.\nplus a paragraph",
-                          title="title",
-                          prefix=helpers.url("/posts"))
-        headers = helpers.set_user_cookie(HTTPHeaders({"Content-Type" : "application/json"}))
-        response = self.fetch(helpers.url("/posts"),
-                   method="POST",
-                   body=post.json,
-                   headers=headers)
-        
+        post, response = self.create_post()
         assert response.headers["Location"] == post.url,\
             "url was %s expected %s" % (response.headers["Location"], post.url)
         assert response.code == 201
@@ -60,34 +52,33 @@ class ReadPostTest(AsyncHTTPTestCase):
     
     def test_get_json(self):
 
-        post = model.Post("text is something like this.\nplus a paragraph",
-                          title="title here",
-                          prefix = helpers.url("/posts"))
-        
-        headers = helpers.set_user_cookie(HTTPHeaders({"Content-Type" : "application/json"}))
-        created = self.fetch(helpers.url("/posts"),
-                              method="POST",
-                              body=post.json,
-                              headers=headers)
-
+        post, created = self.create_post()
         url = created.headers["Location"]
         headers = helpers.set_user_cookie(HTTPHeaders({"Content-Type" : "application/json"}))
         response = self.fetch(url, headers=headers)
         assert response.body == post.json
+        
 
     def test_get_html(self):
-        post = model.Post("text is something like this.\nplus a paragraph",
-                          title="title here",
-                          prefix = helpers.url("/posts"))
         
-        headers = helpers.set_user_cookie(HTTPHeaders({"Content-Type" : "application/json"}))
-        created = self.fetch(helpers.url("/posts"),
-                              method="POST",
-                              body=post.json,
-                              headers=headers)
-
+        post, created = self.create_post()
         url = created.headers["Location"]
         headers = helpers.set_user_cookie(HTTPHeaders({"Content-Type" : "text/html"}))
         response = self.fetch(url, headers=headers)
         assert response.body == post.fragment
+        
+
+    def create_post(self):
+        post = model.Post("text is something like this.\nplus a paragraph",
+                          title="title here",
+                          prefix = helpers.url("/posts"))
+    
+        headers = helpers.set_user_cookie(HTTPHeaders({"Content-Type" : "application/json"}))
+        created = self.fetch(helpers.url("/posts"),
+                             method="POST",
+                             body=post.json,
+                             headers=headers)
+        return post, created
+
+    
 
