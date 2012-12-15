@@ -43,5 +43,6 @@ except Exception as e:
         )
 
     _db = DictWrapper()
+    
     def get_db():
         return _db

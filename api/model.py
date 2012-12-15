@@ -23,6 +23,13 @@ class Base:
         else:
             raise AttributeError
 
+    def __eq__(self, other):
+
+        for key, value in self.meta.items():
+            if other.meta[key] != value:
+                return False
+        return True
+
 class Post(Base):
 
     def __init__(self,

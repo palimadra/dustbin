@@ -1,19 +1,19 @@
 from nose.tools import *
+import dustbin.config as config
 from dustbin.api.model import Account, Post
 from datetime import datetime as dt
 
 import dustbin
 import hashlib
 import urllib
+import json
 
+db = config.get_db()
 
 def test_post_url():
 
     content = "this is a short post" 
     post = Post(content)
-    #todo: date needs to be a property which accepts a datetime object and converts it
-    # to isoformat which will be stored in the "raw" data of the post object and eventually
-    # serialized and stored the database.
     ordinal = 734845
     date = dt.fromordinal(ordinal)
     post.date = date
@@ -43,13 +43,36 @@ def test_post_title():
 
 
 def test_post_save():
-
     """
     saving a post should:
     1. update feeds
     2. create a json entry at the url
     3. create an html fragment entry at the url.html
     """
-    
     content = "check it"
+    post = Post(content)
+    post.save()
+    newpost = Post(**db.get(post.url))
+    assert newpost == post
+
+def test_post_json():
+    """
+    Make sure json is in a format we expect.
+    """
+    content = "check it"
+    post = Post(content=content,
+                title="title here")
+    meta = json.loads(post.json)
+    for key, value in meta.items():
+        assert post.meta[key] == value, "meta value for %s was %s expected %s." % (key, meta[key], value)
+    
+
+def test_load_from_db():
+    """
+    Make sure we can save and rehydrate
+    a post instance from the database.
+    """
+    pass
+    
+
 
