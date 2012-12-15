@@ -76,4 +76,18 @@ class ReadPostTest(AsyncHTTPTestCase):
         assert response.body == post.json
 
     def test_get_html(self):
-        assert False
+        post = model.Post("text is something like this.\nplus a paragraph",
+                          title="title here",
+                          prefix = helpers.url("/posts"))
+        
+        headers = helpers.set_user_cookie(HTTPHeaders({"Content-Type" : "application/json"}))
+        created = self.fetch(helpers.url("/posts"),
+                              method="POST",
+                              body=post.json,
+                              headers=headers)
+
+        url = created.headers["Location"]
+        headers = helpers.set_user_cookie(HTTPHeaders({"Content-Type" : "text/html"}))
+        response = self.fetch(url, headers=headers)
+        assert response.body == post.fragment
+
