@@ -50,9 +50,9 @@ def test_post_save():
     3. create an html fragment entry at the url.html
     """
     content = "check it"
-    post = Post(content)
+    post = Post(content=content, db=db)
     post.save()
-    newpost = Post(**db.get(post.url))
+    newpost = Post(db=db).load(post.url)
     assert newpost == post
     assert post.fragment == db.get(post.url + ".html")
     
@@ -75,9 +75,10 @@ def test_load_from_db():
     a post instance from the database.
     """
     post = Post(content="test this out",
-                title="super awesome title")
+                title="super awesome title",
+                db=db)
     post.save()
-    saved = db.get(post.url)
+    saved = Post(db=db).load(post.url)
     assert saved == post
 
 

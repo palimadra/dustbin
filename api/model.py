@@ -4,6 +4,8 @@ import re
 import dateutil.parser
 import hashlib
 import urllib
+from markdown2 import markdown
+
 from datetime import datetime as dt
 
 
@@ -11,11 +13,13 @@ subdomainre = re.compile("^[a-zA-Z0-9]+$")
 
 class Base:
 
-    def __init__(self, meta=None):
+    def __init__(self, db=None, meta=None):
         if meta:
             self.meta = meta
         else:
             self.meta = {}
+
+        self.db = db
 
     def __getattr__(self, name):
         if self.meta.has_key(name):
@@ -29,6 +33,11 @@ class Base:
             if other.meta[key] != value:
                 return False
         return True
+
+    def load(self, key):
+        assert self.db, "No db instance. Provide a db instance when creating the model"
+        self.meta = json.loads(self.db.get(key))
+        return self
             
 
 class Post(Base):
@@ -37,7 +46,8 @@ class Post(Base):
                  content = "",
                  title = "",
                  date = None,
-                 filename = ""):
+                 filename = "",
+                 db=None):
         
         if not date:
             date = dt.now().isoformat()
@@ -50,7 +60,7 @@ class Post(Base):
                      "date" : date,
                      "filename" : filename}
 
-        Base.__init__(self, meta)
+        Base.__init__(self, db=db, meta=meta)
 
 
     @property
@@ -75,8 +85,19 @@ class Post(Base):
     def json(self):
         return json.dumps(self.meta)
 
-    def save(self):
-        pass
+
+    @property
+    def fragment(self):
+        return markdown(self.content)
+
+
+    def save(self, db=None):
+        if db:
+            self.db = db
+        assert self.db, "You must provide a db instance to the model constructor to save."
+        self.db.set(self.url, self.json)
+        self.db.set(self.url + ".html", self.fragment)
+
 
     def generate_filename(self, title, content):
         if title:
