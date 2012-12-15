@@ -60,8 +60,6 @@ class NewPostTest(BaseTest):
         
         post, response = self.create_post(url="/posts/facebook")
         url = response.headers["Location"]
-        print '!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'
-        print url
         assert url.startswith(helpers.url("/posts/facebook")), "post was created in the wrong place"
         headers = helpers.set_user_cookie(HTTPHeaders({"Content-Type" : "application/json"}))
         response = self.fetch(url, headers=headers)
@@ -95,5 +93,10 @@ class ReadPostTest(BaseTest):
 
 
 class FeedTest(BaseTest):
-    pass
+
+    def test_main_feed(self):
+        assert False
+
+    def test_lense_feed(self):
+        assert False
         
