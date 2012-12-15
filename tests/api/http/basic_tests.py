@@ -23,6 +23,10 @@ def tearDown():
 
 class BaseTest(AsyncHTTPTestCase):
 
+    def get_app(self):
+        return Application()
+
+
     def create_post(self, url="/posts", post=None):
         if not post:
             post = model.Post("text is something like this.\nplus a paragraph",
@@ -39,10 +43,6 @@ class BaseTest(AsyncHTTPTestCase):
 
 class NewPostTest(BaseTest):
     
-    def get_app(self):
-        return Application()
-
-
     def test_post(self):
         post, response = self.create_post()
         assert response.headers["Location"] == post.url,\
@@ -73,9 +73,6 @@ class NewPostTest(BaseTest):
 
 
 class ReadPostTest(BaseTest):
-
-    def get_app(self):
-        return Application()
     
     
     def test_get_json(self):
@@ -94,4 +91,9 @@ class ReadPostTest(BaseTest):
         headers = helpers.set_user_cookie(HTTPHeaders({"Content-Type" : "text/html"}))
         response = self.fetch(url, headers=headers)
         assert response.body == post.fragment
+
+
+
+class FeedTest(BaseTest):
+    pass
         
