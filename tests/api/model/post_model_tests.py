@@ -14,11 +14,11 @@ db = config.get_db()
 def test_post_url():
 
     content = "this is a short post" 
-    post = Post(content)
+    post = Post(content, prefix="sean/")
     ordinal = 734845
     date = dt.fromordinal(ordinal)
     post.date = date
-    expected = "12/8/2012/" + urllib.pathname2url(hashlib.sha256(content).digest())
+    expected = "sean/12/8/2012/" + urllib.pathname2url(hashlib.sha256(content).digest())
     assert post.url == expected, "url was  %s expected %s" % (post.url, expected)
 
 
