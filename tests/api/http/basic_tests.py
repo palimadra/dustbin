@@ -65,6 +65,7 @@ class ReadPostTest(BaseTest):
     def get_app(self):
         return Application()
     
+    
     def test_get_json(self):
 
         post, created = self.create_post()

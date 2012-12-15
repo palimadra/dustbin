@@ -60,4 +60,7 @@ class PostsHandler(BaseHandler):
     @authorized
     @tornado.web.authenticated
     def get(self, subdomain):
-        self.write(self.db.get(self.request.uri))
+        if self.request.headers["Content-type"] == "text/html":
+            self.write(self.db.get(self.request.uri + ".html"))
+        else:
+            self.write(self.db.get(self.request.uri))
