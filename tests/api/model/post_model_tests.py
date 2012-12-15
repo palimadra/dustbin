@@ -84,6 +84,9 @@ def test_load_from_db():
 
 def test_bad_markdown():
     """
-    Make sure bad markup can't be saved.
+    Make sure bad markup is removed.
     """
-    assert False
+    post = Post("<script>alert('evil!')</script><p>cool beans</p>",
+                db=db)
+    expected = "<p>alert('evil!')</p><p>cool beans</p><p></p>"
+    assert post.fragment == expected, "cleansed fragment was %s expected %s" % (post.fragment, expected)

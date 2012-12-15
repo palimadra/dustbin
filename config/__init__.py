@@ -46,3 +46,6 @@ except Exception as e:
     
     def get_db():
         return _db
+
+    TAG_WHITELIST = ["div", "a", "p", "span", "h1", "h2", "h3", "blockquote", "ul", "li", "code", "pre"]
+    ATTR_WHITELIST = ["class", "id", "title", "src", "alt"]

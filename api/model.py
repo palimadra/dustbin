@@ -4,8 +4,9 @@ import re
 import dateutil.parser
 import hashlib
 import urllib
-from markdown2 import markdown
 
+from bleach import clean
+from markdown2 import markdown
 from datetime import datetime as dt
 
 
@@ -88,7 +89,10 @@ class Post(Base):
 
     @property
     def fragment(self):
-        return markdown(self.content)
+        return clean(markdown(self.content),
+                     tags=config.TAG_WHITELIST,
+                     attributes=config.ATTR_WHITELIST,
+                     strip=True)
 
 
     def save(self, db=None):
