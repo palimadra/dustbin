@@ -3,10 +3,7 @@ import dustbin.api.model as model
 import dustbin.tests.helpers as helpers
 import tornado.web as web
 
-from dustbin.api import Application
 from nose.tools import *
-from tornado.testing import AsyncHTTPTestCase
-from tornado.httpclient import HTTPRequest
 from tornado.httputil import HTTPHeaders
 
 db = config.get_db()
@@ -21,27 +18,8 @@ def tearDown():
     db.close()
 
 
-class BaseTest(AsyncHTTPTestCase):
 
-    def get_app(self):
-        return Application()
-
-
-    def create_post(self, url="/posts", post=None):
-        if not post:
-            post = model.Post("text is something like this.\nplus a paragraph",
-                              title="title here",
-                              prefix = helpers.url(url))
-    
-        headers = helpers.set_user_cookie(HTTPHeaders({"Content-Type" : "application/json"}))
-        created = self.fetch(helpers.url(url),
-                             method="POST",
-                             body=post.json,
-                             headers=headers)
-        return post, created
-
-
-class NewPostTest(BaseTest):
+class NewPostTest(helpers.BaseTest):
     
     def test_post(self):
         post, response = self.create_post()
@@ -70,7 +48,7 @@ class NewPostTest(BaseTest):
 
 
 
-class ReadPostTest(BaseTest):
+class ReadPostTest(helpers.BaseTest):
     
     
     def test_get_json(self):
@@ -92,7 +70,7 @@ class ReadPostTest(BaseTest):
 
 
 
-class FeedTest(BaseTest):
+class FeedTest(helpers.BaseTest):
 
     def test_main_feed(self):
         tearDown()

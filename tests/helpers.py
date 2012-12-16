@@ -1,6 +1,12 @@
 import tornado.web as web
 import dustbin.config as config
 import os.path as path
+import dustbin.api.model as model
+from dustbin.api import Application
+from tornado.testing import AsyncHTTPTestCase
+from tornado.httpclient import HTTPRequest
+from tornado.httputil import HTTPHeaders
+
 
 EMAIL = "sean.fioritto@gmail.com"
 SUBDOMAIN = "sean"
@@ -31,3 +37,24 @@ def url(end, public=False):
         puborpriv = "private"
         
     return path.join(*(["/" + SUBDOMAIN, puborpriv] + end.split("/")))
+
+class BaseTest(AsyncHTTPTestCase):
+
+    def get_app(self):
+        return Application()
+
+
+    def create_post(self, uri="/posts", post=None):
+        if not post:
+            post = model.Post("text is something like this.\nplus a paragraph",
+                              title="title here",
+                              prefix = url(uri))
+    
+        headers = set_user_cookie(HTTPHeaders({"Content-Type" : "application/json"}))
+        created = self.fetch(url(uri),
+                             method="POST",
+                             body=post.json,
+                             headers=headers)
+        return post, created
+
+
