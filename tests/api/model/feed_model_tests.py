@@ -5,6 +5,8 @@ from nose.tools import *
 from dustbin.api.model import Account, Post, Feed
 from dustbin.tests.helpers import *
 from datetime import datetime as dt
+from time import strftime
+
 
 db = config.get_db()
 
@@ -47,12 +49,13 @@ def test_feed_json():
     assert obj["updated"] == strftime("%Y-%m-%d %H:%M:%S", now.utctimetuple())
     assert len(obj["entries"]) == 1
     entry = obj["entries"][0]
-    assert not entry.has_key("title")
+    assert entry.has_key("title")
+    assert len(entry['title']) == 0
     assert entry["link"] == p.url
     assert entry["updated"] == strftime("%Y-%m-%d %H:%M:%S",
                                         p.date.utctimetuple())
-    assert entry["author"]["name"] == "harry"
-    assert entry["author"]["email"] == "potter@motherfuckingsorcerer.com"
+    assert obj["author"]["name"] == "harry"
+    assert obj["author"]["email"] == "potter@motherfuckingsorcerer.com"
 
 
 def test_feed_save():

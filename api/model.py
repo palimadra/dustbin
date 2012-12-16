@@ -209,3 +209,16 @@ class Feed(Base):
     def url(self):
         return ""
 
+
+    @property
+    def updated(self):
+        return dateutil.parser.parse(self.meta["updated"])
+    
+
+    @updated.setter
+    def updated(self, value):
+        if type(value) == types.UnicodeType:
+            self.meta["updated"] = value
+        else:
+            self.meta["updated"] = strftime("%Y-%m-%d %H:%M:%S", value.utctimetuple())
+
