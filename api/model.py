@@ -32,7 +32,7 @@ class Base:
             raise AttributeError
 
     def __setattr__(self, name, value):
-        if name in ['db', 'meta']:
+        if name in dir(self) + ['meta', 'db']:
             self.__dict__[name] = value
         else:
             self.__dict__['meta'][name] = value
@@ -64,7 +64,7 @@ class Post(Base):
             date = dt.now().isoformat()
 
         if not filename:
-            filename = self.generate_filename(title, content)
+            filename = self.generate_filename(title, content, date)
             
         meta = {"title" : title,
                      "content" : content,
@@ -114,12 +114,12 @@ class Post(Base):
         self.db.set(self.url + ".html", self.fragment)
 
 
-    def generate_filename(self, title, content):
+    def generate_filename(self, title, content, date):
         if title:
             title = title.replace(" ", "-")
             return urllib.pathname2url(title)
         else:
-            hash = hashlib.sha256(content).digest()
+            hash = hashlib.sha256(content + date).digest()
             return urllib.pathname2url(hash)
 
         

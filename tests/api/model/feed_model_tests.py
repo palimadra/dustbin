@@ -12,6 +12,11 @@ def test_add_post():
     assert len(f.entries) == 0
     f.add_post(Post("test this out"))
     assert len(f.entries) == 1
+
+
+def test_delete_post():
+    f = Feed("test")
+    f.add_post(Post("test this out"))
     
 
 def test_feed_json():

@@ -18,7 +18,7 @@ def test_post_url():
     ordinal = 734845
     date = dt.fromordinal(ordinal)
     post.date = date
-    expected = "sean/12/8/2012/" + urllib.pathname2url(hashlib.sha256(content).digest())
+    expected = "sean/12/8/2012/" + urllib.pathname2url(hashlib.sha256(content + post.meta["date"]).digest())
     assert post.url == expected, "url was  %s expected %s" % (post.url, expected)
 
 
@@ -27,7 +27,7 @@ def test_post_filename():
     content = "some stuff in here"
     title = "this is awesome"
     post = Post(content)
-    expected = urllib.pathname2url(hashlib.sha256(content).digest())
+    expected = urllib.pathname2url(hashlib.sha256(content + post.meta["date"]).digest())
     assert post.filename == expected, "filename is %s expected %s" % (post.filename, expected)
     post = Post(content, title=title)
     assert post.filename == urllib.pathname2url(title)
