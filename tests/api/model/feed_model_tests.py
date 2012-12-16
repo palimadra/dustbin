@@ -6,6 +6,13 @@ import dustbin.config as config
 
 db = config.get_db()
 
+
+def test_add_post():
+    f = Feed("test")
+    
+    assert False
+    
+
 def test_feed_json():
     assert False
 

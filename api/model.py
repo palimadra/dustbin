@@ -114,6 +114,7 @@ class Post(Base):
 
     def generate_filename(self, title, content):
         if title:
+            title = title.replace(" ", "-")
             return urllib.pathname2url(title)
         else:
             hash = hashlib.sha256(content).digest()
@@ -150,8 +151,27 @@ class Account:
 
 class Feed(Base):
 
-    def __init__(self, post):
-        Base.__init__(self)
+    def __init__(self,
+                 name="",
+                 db=None,
+                 links=None,
+                 id="",
+                 updated=None,
+                 author="",
+                 entries=None):
+
+        if not entries:
+            entries = []
+            
+        Base.__init__(self, db=db, meta=locals())
+        
+
+    def add_post(self, post):
+        pass
+
+    @property
+    def url(self):
+        return ""
 
     @property
     def json(self):
