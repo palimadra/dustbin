@@ -37,6 +37,7 @@ def url(end, public=False):
         puborpriv = "private"
         
     return path.join(*(["/" + SUBDOMAIN, puborpriv] + end.split("/")))
+    
 
 class BaseTest(AsyncHTTPTestCase):
 

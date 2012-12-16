@@ -8,6 +8,11 @@ import tornado.web
 from dustbin.api.model import Post
 
 
+urlpatterns = {
+    "PostsHandler" : r"/(?P<subdomain>[^/]+)/(?:private|public)/posts(?:/?$)|(?:/[^/]+/?$)"
+}
+
+
 def authorized(fn):
     def wrapped(*args, **kwargs):
         self = args[0]
@@ -24,7 +29,7 @@ def authorized(fn):
 class Application(tornado.web.Application):
     def __init__(self):
         handlers = [
-            (r"/(?P<subdomain>[^/]+)/(?:private|public)/posts(?:/?$)|(?:/[^/]+/?$)", PostsHandler)
+            (urlpatterns["PostsHandler"], PostsHandler)
         ]
         settings = config.appsettings
         tornado.web.Application.__init__(self, handlers, **settings)
