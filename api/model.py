@@ -163,7 +163,7 @@ class Account:
 class Feed(Base):
 
     def __init__(self,
-                 name="",
+                 title="",
                  prefix="",
                  db=None,
                  links=None,
@@ -171,7 +171,7 @@ class Feed(Base):
                  author=None,
                  entries=None):
 
-        assert name, "feeds must have a name"
+        assert title, "feeds must have a title"
         
         if not entries:
             entries = []
@@ -194,7 +194,7 @@ class Feed(Base):
         entry["id"] = post.url
         entry["title"] = post.title
         entry["link"] = post.url
-        entry["updated"] = strftime("%Y-%m-%d %H:%M:%S", post.date.utctimetuple())
+        entry["updated"] =  strftime("%Y-%m-%d %H:%M:%S", post.date.utctimetuple())
         self.entries = [entry] + self.entries
 
 

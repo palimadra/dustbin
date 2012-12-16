@@ -1,8 +1,10 @@
+import dustbin.config as config
+import json
+
 from nose.tools import *
 from dustbin.api.model import Account, Post, Feed
 from dustbin.tests.helpers import *
-
-import dustbin.config as config
+from datetime import datetime as dt
 
 db = config.get_db()
 
@@ -23,14 +25,37 @@ def test_delete_post():
     assert len(f.entries) == 0
     assert_raises(Exception, f.remove_post, p.url)
     
-
+    
+#TODO: should be able to pass in an account as author in the feed constructor
 def test_feed_json():
-    assert False
+    now = dt.now()
+    f = Feed(title="test",
+             links=[{"href" : "http://www.google.com",
+                       "rel" : "self"},
+                       {"href" : "http://www.yahoo.com"}],
+            updated = now,
+            author = {"name" : "harry",
+                       "email" : "potter@motherfuckingsorcerer.com"})
+    
+    p = Post("test this out\nright now")
+    f.add_post(p)
+
+    obj = json.loads(f.json)
+    assert obj["title"] == "test"
+    assert len(obj["links"]) == 2
+    assert obj["links"][0]["href"] == "http://www.google.com"
+    assert obj["updated"] == strftime("%Y-%m-%d %H:%M:%S", now.utctimetuple())
+    assert len(obj["entries"]) == 1
+    entry = obj["entries"][0]
+    assert not entry.has_key("title")
+    assert entry["link"] == p.url
+    assert entry["updated"] == strftime("%Y-%m-%d %H:%M:%S",
+                                        p.date.utctimetuple())
+    assert entry["author"]["name"] == "harry"
+    assert entry["author"]["email"] == "potter@motherfuckingsorcerer.com"
 
 
 def test_feed_save():
-    """
-    """
     assert False
     
 
