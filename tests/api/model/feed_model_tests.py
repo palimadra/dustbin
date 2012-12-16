@@ -9,8 +9,9 @@ db = config.get_db()
 
 def test_add_post():
     f = Feed("test")
-    
-    assert False
+    assert len(f.entries) == 0
+    f.add_post(Post("test this out"))
+    assert len(f.entries) == 1
     
 
 def test_feed_json():

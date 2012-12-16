@@ -1,6 +1,7 @@
 import dustbin.config as config
 import json
 import re
+import cgi
 import dateutil.parser
 import hashlib
 import urllib
@@ -9,6 +10,7 @@ import os.path as path
 from bleach import clean
 from markdown2 import markdown
 from datetime import datetime as dt
+from time import strftime
 
 
 subdomainre = re.compile("^[a-zA-Z0-9]+$")
@@ -153,25 +155,44 @@ class Feed(Base):
 
     def __init__(self,
                  name="",
+                 prefix="",
                  db=None,
                  links=None,
-                 id="",
                  updated=None,
-                 author="",
+                 author=None,
                  entries=None):
 
+        assert name, "feeds must have a name"
+        
         if not entries:
             entries = []
+
+        if not links:
+            links = []
+
+        if not updated:
+            updated = dt.now().isoformat()
+
+        if not author:
+            author = {}
             
         Base.__init__(self, db=db, meta=locals())
-        
 
+        
     def add_post(self, post):
-        pass
+        entry = {}
+        entry["content"] = cgi.escape(post.fragment)
+        entry["id"] = post.url
+        entry["title"] = post.title
+        entry["link"] = post.url
+        entry["updated"] = strftime("%Y-%m-%d %H:%M:%S", post.date.utctimetuple())
+        self.entries = [entry] + self.entries
+
 
     @property
     def url(self):
         return ""
+
 
     @property
     def json(self):
