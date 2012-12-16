@@ -16,7 +16,12 @@ def test_add_post():
 
 def test_delete_post():
     f = Feed("test")
-    f.add_post(Post("test this out"))
+    p = Post("test this out")
+    f.add_post(p)
+    assert len(f.entries) == 1
+    f.remove_post(p.url)
+    assert len(f.entries) == 0
+    assert_raises(Exception, f.remove_post, p.url)
     
 
 def test_feed_json():

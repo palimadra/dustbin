@@ -188,7 +188,6 @@ class Feed(Base):
         Base.init(self, locals())
 
 
-        
     def add_post(self, post):
         entry = {}
         entry["content"] = cgi.escape(post.fragment)
@@ -198,6 +197,13 @@ class Feed(Base):
         entry["updated"] = strftime("%Y-%m-%d %H:%M:%S", post.date.utctimetuple())
         self.entries = [entry] + self.entries
 
+
+    def remove_post(self, id):
+
+        if id in [entry["id"] for entry in self.entries]:
+            self.entries = [entry for entry in self.entries if entry["id"] != id]
+        else:
+            raise Exception("Post not found")
 
     @property
     def url(self):
