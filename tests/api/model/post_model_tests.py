@@ -53,7 +53,7 @@ def test_post_save():
     content = "check it"
     post = Post(content=content, db=db)
     post.save()
-    newpost = Post(db=db).load(post.url)
+    newpost = Post(db=db).load(post.url + ".json")
     assert newpost == post
     assert post.fragment == db.get(post.url + ".html")
     
@@ -80,7 +80,7 @@ def test_load_from_db():
                 title="super awesome title",
                 db=db)
     post.save()
-    saved = Post(db=db).load(post.url)
+    saved = Post(db=db).load(post.url + ".json")
     assert saved == post
 
 

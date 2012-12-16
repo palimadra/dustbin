@@ -26,6 +26,7 @@ class NewPostTest(helpers.BaseTest):
         assert response.headers["Location"] == post.url,\
             "url was %s expected %s" % (response.headers["Location"], post.url)
         assert response.code == 201
+        
 
     def test_post_to_lense(self):
         """
@@ -36,7 +37,7 @@ class NewPostTest(helpers.BaseTest):
         versus post /sean/posts/public/computers
         """
         
-        post, response = self.create_post(url="/posts/facebook")
+        post, response = self.create_post(uri="/posts/facebook")
         url = response.headers["Location"]
         assert url.startswith(helpers.url("/posts/facebook")), "post was created in the wrong place"
         headers = helpers.set_user_cookie(HTTPHeaders({"Content-Type" : "application/json"}))
@@ -46,6 +47,9 @@ class NewPostTest(helpers.BaseTest):
         response = self.fetch(url, headers=headers)
         assert response.body == post.fragment
 
+
+    def test_bad_content_type(self):
+        assert False
 
 
 class ReadPostTest(helpers.BaseTest):
@@ -67,7 +71,6 @@ class ReadPostTest(helpers.BaseTest):
         headers = helpers.set_user_cookie(HTTPHeaders({"Content-Type" : "text/html"}))
         response = self.fetch(url, headers=headers)
         assert response.body == post.fragment
-
 
 
 class FeedTest(helpers.BaseTest):

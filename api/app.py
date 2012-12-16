@@ -7,9 +7,10 @@ import tornado.options
 import tornado.web
 from dustbin.api.model import Post
 
-
+#(?:/?$)?|
 urlpatterns = {
-    "PostsHandler" : r"/(?P<subdomain>[^/]+)/(?:private|public)/posts(?:/?$)|(?:/[^/]+/?$)"
+    "NewPostHandler" : r"/(?P<subdomain>[^/]+)/(?:private|public)/posts(?:/[^/]+/?$|/?$)",
+    "PostsHandler" : r"/(?P<subdomain>[^/]+)/(?:private|public)/posts/[^/]+/.+"
 }
 
 
@@ -29,7 +30,8 @@ def authorized(fn):
 class Application(tornado.web.Application):
     def __init__(self):
         handlers = [
-            (urlpatterns["PostsHandler"], PostsHandler)
+            (urlpatterns["PostsHandler"], PostsHandler),
+            (urlpatterns["NewPostHandler"], NewPostHandler),
         ]
         settings = config.appsettings
         tornado.web.Application.__init__(self, handlers, **settings)
@@ -50,7 +52,7 @@ class BaseHandler(tornado.web.RequestHandler):
         return self.db.get(user_id)
 
 
-class PostsHandler(BaseHandler):
+class NewPostHandler(BaseHandler):
 
     @authorized
     @tornado.web.authenticated
@@ -61,11 +63,17 @@ class PostsHandler(BaseHandler):
         self.set_header("Location", post.url)
         self.set_status(201)
 
-
+class PostsHandler(BaseHandler):
+    
     @authorized
     @tornado.web.authenticated
     def get(self, subdomain):
+        url = self.request.uri
         if self.request.headers["Content-type"] == "text/html":
-            self.write(self.db.get(self.request.uri + ".html"))
+            if not url.endswith(".html"):
+                url = url + ".html"
+            self.write(self.db.get(url))
         else:
-            self.write(self.db.get(self.request.uri))
+            if not url.endswith(".json"):
+                url = url + ".json"
+            self.write(self.db.get(url))

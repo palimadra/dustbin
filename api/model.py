@@ -108,7 +108,7 @@ class Post(Base):
         if db:
             self.db = db
         assert self.db, "You must provide a db instance to the model constructor to save."
-        self.db.set(self.url, self.json)
+        self.db.set(self.url + ".json", self.json)
         self.db.set(self.url + ".html", self.fragment)
 
 
