@@ -57,6 +57,11 @@ class Base(object):
         assert self.db, "No db instance. Provide a db instance when creating the model"
         self.meta = json.loads(self.db.get(key))
         return self
+
+    @property
+    def json(self):
+        return json.dumps(self.meta)
+
             
 
 class Post(Base):
@@ -101,11 +106,6 @@ class Post(Base):
                                         self.date.day,
                                         self.date.year,
                                         self.filename]))
-
-    @property
-    def json(self):
-        return json.dumps(self.meta)
-
 
     @property
     def fragment(self):
@@ -209,7 +209,3 @@ class Feed(Base):
     def url(self):
         return ""
 
-
-    @property
-    def json(self):
-        return ""
