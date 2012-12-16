@@ -13,11 +13,10 @@ db = config.get_db()
 
 def test_post_url():
 
-    content = "this is a short post" 
-    post = Post(content, prefix="sean")
+    content = "this is a short post"
     ordinal = 734845
     date = dt.fromordinal(ordinal)
-    post.date = date
+    post = Post(content, prefix="sean", date=date)
     expected = "sean/12/8/2012/" + urllib.pathname2url(hashlib.sha256(content + post.meta["date"]).digest())
     assert post.url == expected, "url was  %s expected %s" % (post.url, expected)
 
@@ -30,7 +29,7 @@ def test_post_filename():
     expected = urllib.pathname2url(hashlib.sha256(content + post.meta["date"]).digest())
     assert post.filename == expected, "filename is %s expected %s" % (post.filename, expected)
     post = Post(content, title=title)
-    assert post.filename == urllib.pathname2url(title)
+    assert post.filename == urllib.pathname2url(title.replace(" ", "-"))
 
 
 def test_post_title():

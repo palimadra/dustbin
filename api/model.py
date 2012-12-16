@@ -6,6 +6,7 @@ import dateutil.parser
 import hashlib
 import urllib
 import os.path as path
+import types
 
 from bleach import clean
 from markdown2 import markdown
@@ -15,15 +16,22 @@ from time import strftime
 
 subdomainre = re.compile("^[a-zA-Z0-9]+$")
 
-class Base:
+class Base(object):
 
-    def __init__(self, db=None, meta=None):
-        if meta:
-            self.meta = meta
-        else:
-            self.meta = {}
+    def init(self, kwargs):
 
+        if kwargs.has_key('self'):
+            del kwargs['self']
+
+        Base.__init__(self, **kwargs)
+
+    def __init__(self, db=None, **kwargs):
+
+        self.meta = {}
         self.db = db
+        for key, value in kwargs.items():
+            self.__setattr__(key, value)
+
 
     def __getattr__(self, name):
         if self.meta.has_key(name):
@@ -32,10 +40,11 @@ class Base:
             raise AttributeError
 
     def __setattr__(self, name, value):
+        #meta and db never go into the meta property
         if name in dir(self) + ['meta', 'db']:
-            self.__dict__[name] = value
+            object.__setattr__(self, name, value)
         else:
-            self.__dict__['meta'][name] = value
+            self.meta[name] = value
 
     def __eq__(self, other):
 
@@ -61,18 +70,12 @@ class Post(Base):
                  db=None):
         
         if not date:
-            date = dt.now().isoformat()
+            date = dt.now()
 
         if not filename:
-            filename = self.generate_filename(title, content, date)
-            
-        meta = {"title" : title,
-                     "content" : content,
-                     "date" : date,
-                     "filename" : filename,
-                     "prefix" : prefix}
+            filename = self.generate_filename(title, content, date.isoformat())
 
-        Base.__init__(self, db=db, meta=meta)
+        Base.init(self, locals())
 
 
     @property
@@ -82,7 +85,13 @@ class Post(Base):
 
     @date.setter
     def date(self, value):
-        self.meta["date"] = value.toisoformat()
+        if type(value) == types.UnicodeType:
+            self.meta["date"] = value
+        else:
+            self.meta["date"] = value.isoformat()
+
+        if hasattr(self, 'filename'):
+            self.filename = self.generate_filename(self.title, self.content, self.meta["date"])
 
 
     @property
@@ -175,8 +184,9 @@ class Feed(Base):
 
         if not author:
             author = {}
-            
-        Base.__init__(self, db=db, meta=locals())
+
+        Base.init(self, locals())
+
 
         
     def add_post(self, post):
