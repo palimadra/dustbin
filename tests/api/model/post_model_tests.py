@@ -46,7 +46,7 @@ def test_post_title():
 def test_post_save():
     """
     saving a post should:
-    1. update feeds
+    1. update feeds (tested in feed test module)
     2. create a json entry at the url
     3. create an html fragment entry at the url.html
     """
@@ -56,6 +56,7 @@ def test_post_save():
     newpost = Post(db=db).load(post.url)
     assert newpost == post
     assert post.fragment == db.get(post.url + ".html")
+    
     
 
 def test_post_json():

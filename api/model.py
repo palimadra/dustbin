@@ -146,3 +146,13 @@ class Account:
     @property
     def url(self):
         return self.subdomain + "." + config.domain
+
+
+class Feed(Base):
+
+    def __init__(self, post):
+        Base.__init__(self)
+
+    @property
+    def json(self):
+        return ""

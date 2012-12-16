@@ -24,7 +24,7 @@ def authorized(fn):
 class Application(tornado.web.Application):
     def __init__(self):
         handlers = [
-            (r"/(?P<subdomain>[^/]+)/(?:private|public)/posts(?:/?$|(?:/.*$))", PostsHandler)
+            (r"/(?P<subdomain>[^/]+)/(?:private|public)/posts(?:/?$)|(?:/[^/]+/?$)", PostsHandler)
         ]
         settings = config.appsettings
         tornado.web.Application.__init__(self, handlers, **settings)

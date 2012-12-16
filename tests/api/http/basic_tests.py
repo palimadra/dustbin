@@ -95,7 +95,15 @@ class ReadPostTest(BaseTest):
 class FeedTest(BaseTest):
 
     def test_main_feed(self):
-        assert False
+        tearDown()
+        setUp()
+        post, created = self.create_post()
+        headers = helpers.set_user_cookie(HTTPHeaders({"Content-Type" : "application/json"}))
+        response = self.fetch(helpers.url("/posts/feed"), headers=headers)
+        feed = model.Feed()
+        feed.add(post)
+        assert feed.json == response.body
+
 
     def test_lense_feed(self):
         assert False
