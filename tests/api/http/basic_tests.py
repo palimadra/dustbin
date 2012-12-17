@@ -26,7 +26,6 @@ class NewPostTest(helpers.BaseTest):
         assert response.headers["Location"] == post.url,\
             "url was %s expected %s" % (response.headers["Location"], post.url)
         assert response.code == 201
-        
 
     def test_post_to_lense(self):
         """
@@ -37,9 +36,9 @@ class NewPostTest(helpers.BaseTest):
         versus post /sean/posts/public/computers
         """
         
-        post, response = self.create_post(uri="/posts/facebook")
+        post, response = self.create_post(uri="/facebook/posts")
         url = response.headers["Location"]
-        assert url.startswith(helpers.url("/posts/facebook")), "post was created in the wrong place"
+        assert url.startswith(helpers.url("/facebook/posts")), "post was created in the wrong place"
         headers = helpers.set_user_cookie(HTTPHeaders({"Content-Type" : "application/json"}))
         response = self.fetch(url, headers=headers)
         assert response.body == post.json
@@ -47,6 +46,8 @@ class NewPostTest(helpers.BaseTest):
         response = self.fetch(url, headers=headers)
         assert response.body == post.fragment
 
+    def test_lense_named_posts(self):
+        assert False
 
     def test_bad_content_type(self):
         assert False
@@ -73,6 +74,13 @@ class ReadPostTest(helpers.BaseTest):
         assert response.body == post.fragment
 
 
+    def test_get_trailing_slash(self):
+        """
+        Make sure we handle requests for posts that have a trailing slash.
+        """
+        assert False
+
+
 class FeedTest(helpers.BaseTest):
 
     def test_main_feed(self):
@@ -83,15 +91,15 @@ class FeedTest(helpers.BaseTest):
         
         post, created = self.create_post()
         headers = helpers.set_user_cookie(HTTPHeaders({"Content-Type" : "application/json"}))
-        response = self.fetch(helpers.url("/posts/feed"), headers=headers)
-        feed = model.Feed().load("/posts/feed", db=db)
+        response = self.fetch(helpers.url("/feed"), headers=headers)
+        feed = model.Feed().load("/feed", db=db)
         assert feed.json == response.body
 
         #add another post
         post, created = self.create_post()
-        response = self.fetch(helpers.url("/posts/feed"), headers=headers)
+        response = self.fetch(helpers.url("/feed"), headers=headers)
         assert feed.json != response.body
-        feed = model.Feed().load("/posts/feed", db=db)
+        feed = model.Feed().load("/feed", db=db)
         assert feed.json == response.body
 
 

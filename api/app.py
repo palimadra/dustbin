@@ -5,12 +5,13 @@ import tornado.httpserver
 import tornado.ioloop
 import tornado.options
 import tornado.web
-from dustbin.api.model import Post
+from dustbin.api.model import Post, Feed
 
 #(?:/?$)?|
 urlpatterns = {
-    "NewPostHandler" : r"/(?P<subdomain>[^/]+)/(?:private|public)/posts(?:/[^/]+/?$|/?$)",
-    "PostsHandler" : r"/(?P<subdomain>[^/]+)/(?:private|public)/posts/[^/]+/.+"
+    "NewPostHandler" : r"/(?P<subdomain>[^/]+)/(?:private|public)/(?:[^/]+/posts|posts)/?$",
+    "PostsHandler" : r"/(?P<subdomain>[^/]+)/(?:private|public)/posts/[^/]+/.+",
+    "FeedsHandler" : r"/(?P<subdomain>[^/]+)/(?:private|public)/(?:feed|[^/]+/feed)(?:\.json)?/?$",
 }
 
 
@@ -60,6 +61,7 @@ class NewPostHandler(BaseHandler):
         post = Post(**json.loads(self.request.body))
         post.prefix = self.request.uri
         post.save(db=self.db)
+        feed = Feed(db=self.db).load(post.prefix)
         self.set_header("Location", post.url)
         self.set_status(201)
         
