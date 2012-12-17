@@ -9,8 +9,8 @@ from dustbin.api.model import Post, Feed
 
 #(?:/?$)?|
 urlpatterns = {
-    "NewPostHandler" : r"/(?P<subdomain>[^/]+)/(?:private|public)/(?:[^/]+/posts|posts)/?$",
-    "PostsHandler" : r"/(?P<subdomain>[^/]+)/(?:private|public)/posts/[^/]+/.+",
+    "NewPostHandler" : r"/(?P<subdomain>[^/]+)/(?:private|public)/(?:(?P<lense>[^/]+)/posts|posts)/?$",
+    "PostsHandler" : r"/(?P<subdomain>[^/]+)/(?:private|public)/(?:posts|[^/]+/posts)/.+",
     "FeedsHandler" : r"/(?P<subdomain>[^/]+)/(?:private|public)/(?:feed|[^/]+/feed)(?:\.json)?/?$",
 }
 
@@ -57,11 +57,20 @@ class NewPostHandler(BaseHandler):
 
     @authorized
     @tornado.web.authenticated
-    def post(self, subdomain):
+    def post(self, subdomain, lense=None):
         post = Post(**json.loads(self.request.body))
         post.prefix = self.request.uri
         post.save(db=self.db)
-        feed = Feed(db=self.db).load(post.prefix)
+
+#        prefix = Feed.get_url(post.prefix)
+#        try:<
+#            feed = Feed(db=self.db).load(post.prefix + ".json")
+#        except:
+#            feed == Feed(db=self.db,
+#                         prefix=prefix,
+#                         author=self.current_user)
+#            feed.save()
+                         
         self.set_header("Location", post.url)
         self.set_status(201)
         
