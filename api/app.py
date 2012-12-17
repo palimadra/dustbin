@@ -62,6 +62,7 @@ class NewPostHandler(BaseHandler):
         post.save(db=self.db)
         self.set_header("Location", post.url)
         self.set_status(201)
+        
 
 class PostsHandler(BaseHandler):
     

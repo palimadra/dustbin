@@ -184,6 +184,9 @@ class Feed(Base):
         if not author:
             author = {}
 
+        if not title:
+            title = "feed"
+
         Base.init(self, locals())
 
 

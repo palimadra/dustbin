@@ -8,9 +8,7 @@ from dustbin.tests.helpers import *
 from datetime import datetime as dt
 from time import strftime
 
-
 db = config.get_db()
-
 
 def test_add_post():
     f = Feed("test")
@@ -67,6 +65,9 @@ def test_feed_url():
     f = Feed(title, prefix="sean")
     escaped = urllib.pathname2url(title.replace(" ", "-"))
     expect = "sean/" + escaped
+    assert f.url == expect, "url was %s expected %s" % (f.url, expect)
+    f = Feed(prefix="sean/public/posts")
+    expect = "sean/public/posts/feed"
     assert f.url == expect, "url was %s expected %s" % (f.url, expect)
 
 
