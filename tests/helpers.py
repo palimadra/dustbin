@@ -8,7 +8,7 @@ from tornado.httpclient import HTTPRequest
 from tornado.httputil import HTTPHeaders
 
 
-EMAIL = "sean.fioritto@gmail.com"
+EMAIL = "sean.fioritto@test.com"
 SUBDOMAIN = "sean"
 
 def get_user_cookie(secret=None, name=None, value=None):

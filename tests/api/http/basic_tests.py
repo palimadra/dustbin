@@ -114,3 +114,11 @@ class FeedTest(helpers.BaseTest):
     def test_lense_feed(self):
         assert False
         
+
+class AccountTest(helpers.BaseTest):
+
+    def test_existing_account(self):
+        """
+        make sure an existing account can't be overriden.
+        """
+        assert False

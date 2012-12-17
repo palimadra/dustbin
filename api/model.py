@@ -133,12 +133,29 @@ class Post(Base):
             return urllib.pathname2url(hash)
 
         
-class Account:
+class Account(Base):
 
-    def __init__(self, email, subdomain):
+    def __init__(self, email=None, subdomain=None):
 
+        assert email, "email is required"
+        assert subdomain, "subdomain is required"
+        assert Account.valid_subdomain(subdomain), "Subdomain is invalid"
+        
         self.email = email
         self.subdomain = subdomain
+        
+        
+
+    def save(self, db=None):
+        if db:
+            self.db = db
+        assert self.db, "You must provide a db instance to the model constructor to save."
+        self.db.set(self.url + ".json", self.json)
+
+
+    @property
+    def url(self):
+        return "/" + self.subdomain
 
 
     @staticmethod
@@ -155,10 +172,6 @@ class Account:
         
         else:
             return True
-
-    @property
-    def url(self):
-        return self.subdomain + "." + config.domain
 
 
 class Feed(Base):
