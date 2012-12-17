@@ -180,7 +180,7 @@ class Feed(Base):
             links = []
 
         if not updated:
-            updated = dt.now().isoformat()
+            updated = dt.now()
 
         if not author:
             author = {}

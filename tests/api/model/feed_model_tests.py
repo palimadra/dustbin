@@ -31,14 +31,7 @@ def test_delete_post():
 #TODO: should be able to pass in an account as author in the feed constructor
 def test_feed_json():
     now = dt.now()
-    f = Feed(title="test",
-             links=[{"href" : "http://www.google.com",
-                       "rel" : "self"},
-                       {"href" : "http://www.yahoo.com"}],
-            updated = now,
-            author = {"name" : "harry",
-                       "email" : "potter@motherfuckingsorcerer.com"})
-    
+    f = create_feed(now=now)
     p = Post("test this out\nright now")
     f.add_post(p)
 
@@ -58,13 +51,22 @@ def test_feed_json():
     assert obj["author"]["email"] == "potter@motherfuckingsorcerer.com"
 
 
-def test_feed_save():
-    assert False
-    
-
 def test_load_from_db():
     """
     Make sure we can save and rehydrate
     a feed instance from the database.
     """
-    assert False
+    pass
+
+
+def create_feed(now=None):
+    if not now:
+        now = dt.now()
+    return Feed(title="test",
+             links=[{"href" : "http://www.google.com",
+                       "rel" : "self"},
+                       {"href" : "http://www.yahoo.com"}],
+            updated=now,
+            author = {"name" : "harry",
+                       "email" : "potter@motherfuckingsorcerer.com"})
+
