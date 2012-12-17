@@ -164,7 +164,7 @@ class Account:
 class Feed(Base):
 
     def __init__(self,
-                 title="",
+                 title=None,
                  prefix="",
                  db=None,
                  links=None,

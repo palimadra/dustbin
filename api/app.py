@@ -62,9 +62,9 @@ class NewPostHandler(BaseHandler):
         post.prefix = self.request.uri
         post.save(db=self.db)
 
-#        prefix = Feed.get_url(post.prefix)
-#        try:<
-#            feed = Feed(db=self.db).load(post.prefix + ".json")
+#        url = Feed.get_url(post.prefix)
+#        try:
+#            feed = Feed(db=self.db).load(url + '.json')
 #        except:
 #            feed == Feed(db=self.db,
 #                         prefix=prefix,
