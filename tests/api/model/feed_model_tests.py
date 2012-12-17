@@ -1,5 +1,6 @@
 import dustbin.config as config
 import json
+import urllib
 
 from nose.tools import *
 from dustbin.api.model import Account, Post, Feed
@@ -56,7 +57,17 @@ def test_load_from_db():
     Make sure we can save and rehydrate
     a feed instance from the database.
     """
-    pass
+    f = create_feed()
+    f.save(db=db)
+    created = Feed(db=db).load(f.url + ".json")
+
+
+def test_feed_url():
+    title = "facebook sucks"
+    f = Feed(title, prefix="sean")
+    escaped = urllib.pathname2url(title.replace(" ", "-"))
+    expect = "sean/" + escaped
+    assert f.url == expect, "url was %s expected %s" % (f.url, expect)
 
 
 def create_feed(now=None):

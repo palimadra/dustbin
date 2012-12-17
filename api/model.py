@@ -171,7 +171,6 @@ class Feed(Base):
                  author=None,
                  entries=None):
 
-        assert title, "feeds must have a title"
         
         if not entries:
             entries = []
@@ -207,7 +206,9 @@ class Feed(Base):
 
     @property
     def url(self):
-        return ""
+        assert self.title, "feeds must have a title"
+        escaped = urllib.pathname2url(self.title.replace(" ", "-"))
+        return path.join(self.prefix, escaped)
 
 
     @property
@@ -221,4 +222,11 @@ class Feed(Base):
             self.meta["updated"] = value
         else:
             self.meta["updated"] = strftime("%Y-%m-%d %H:%M:%S", value.utctimetuple())
+            
+
+    def save(self, db=None):
+        if db:
+            self.db = db
+        assert self.db, "You must provide a db instance to the model constructor to save."
+        self.db.set(self.url + ".json", self.json)
 
