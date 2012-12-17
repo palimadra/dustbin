@@ -135,22 +135,22 @@ class Post(Base):
         
 class Account(Base):
 
-    def __init__(self, email=None, subdomain=None):
+    def __init__(self, db=None, email=None, subdomain=None):
 
-        assert email, "email is required"
-        assert subdomain, "subdomain is required"
-        assert Account.valid_subdomain(subdomain), "Subdomain is invalid"
-        
-        self.email = email
-        self.subdomain = subdomain
-        
+        Base.init(self, locals())
         
 
     def save(self, db=None):
         if db:
             self.db = db
         assert self.db, "You must provide a db instance to the model constructor to save."
-        self.db.set(self.url + ".json", self.json)
+        assert self.email, "email is required"
+        assert self.subdomain, "subdomain is required"
+        assert Account.valid_subdomain(self.subdomain), "Subdomain is invalid"
+
+        #TODO: always save to the url without .json extension as a default, only add json extension
+        # if there are multiple representation possibilities.
+        self.db.set(self.url, self.json)
 
 
     @property
