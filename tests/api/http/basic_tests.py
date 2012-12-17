@@ -78,12 +78,29 @@ class FeedTest(helpers.BaseTest):
     def test_main_feed(self):
         tearDown()
         setUp()
+        #TODO: posting, deleting or updating a post should update the lense
+        # feed and the public/private feed.
+        
         post, created = self.create_post()
         headers = helpers.set_user_cookie(HTTPHeaders({"Content-Type" : "application/json"}))
         response = self.fetch(helpers.url("/posts/feed"), headers=headers)
-        feed = model.Feed()
-        feed.add(post)
+        feed = model.Feed().load("/posts/feed", db=db)
         assert feed.json == response.body
+
+        #add another post
+        post, created = self.create_post()
+        response = self.fetch(helpers.url("/posts/feed"), headers=headers)
+        assert feed.json != response.body
+        feed = model.Feed().load("/posts/feed", db=db)
+        assert feed.json == response.body
+
+
+    def test_update_post(self):
+        assert False
+
+
+    def test_delete_post(self):
+        assert False
 
 
     def test_lense_feed(self):

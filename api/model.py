@@ -22,11 +22,10 @@ class Base(object):
 
         if kwargs.has_key('self'):
             del kwargs['self']
-
+            
         Base.__init__(self, **kwargs)
 
     def __init__(self, db=None, **kwargs):
-
         self.meta = {}
         self.db = db
         for key, value in kwargs.items():
@@ -41,7 +40,7 @@ class Base(object):
 
     def __setattr__(self, name, value):
         #meta and db never go into the meta property
-        if name in dir(self) + ['meta', 'db']:
+        if hasattr(type(self), name) or name in ['meta', 'db']:
             object.__setattr__(self, name, value)
         else:
             self.meta[name] = value
@@ -53,8 +52,10 @@ class Base(object):
                 return False
         return True
 
-    def load(self, key):
-        assert self.db, "No db instance. Provide a db instance when creating the model"
+    def load(self, key, db=None):
+        if db:
+            self.db = db
+        assert self.db, "No db instance. Provide a db instance when creating the model or as a keyword to this method"
         self.meta = json.loads(self.db.get(key))
         return self
 
