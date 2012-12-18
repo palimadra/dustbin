@@ -35,7 +35,7 @@ def test_feed_json():
     f.add_post(p)
 
     obj = json.loads(f.json)
-    assert obj["title"] == "test"
+    assert obj["title"] == "pics"
     assert len(obj["links"]) == 2
     assert obj["links"][0]["href"] == "http://www.google.com"
     assert obj["updated"] == strftime("%Y-%m-%d %H:%M:%S", now.utctimetuple())
@@ -46,13 +46,13 @@ def test_feed_json():
     assert entry["link"] == p.url
     assert entry["updated"] == strftime("%Y-%m-%d %H:%M:%S",
                                         p.date.utctimetuple())
-    assert obj["author"]["subdomain"] == "harry"
+    assert obj["author"]["subdomain"] == "potter"
     assert obj["author"]["email"] == "potter@motherfuckingsorcerer.com"
 
 
 def test_author():
     f = create_feed()
-    assert f.meta["author"]["subdomain"] == "harry"
+    assert f.meta["author"]["subdomain"] == "potter"
     assert f.meta["author"]["email"] == "potter@motherfuckingsorcerer.com"
 
 
@@ -66,17 +66,6 @@ def test_load_from_db():
     created = Feed(db=db).load(f.url + ".json")
 
 
-def test_feed_url():
-    title = "facebook sucks"
-    f = Feed(title, prefix="sean")
-    escaped = urllib.pathname2url(title.replace(" ", "-"))
-    expect = "sean/" + escaped
-    assert f.url == expect, "url was %s expected %s" % (f.url, expect)
-    f = Feed(prefix="sean/public/posts")
-    expect = "sean/public/posts/feed"
-    assert f.url == expect, "url was %s expected %s" % (f.url, expect)
-
-
 def test_links():
     """
     test that the links generated are correct.
@@ -85,14 +74,15 @@ def test_links():
 
 
 def create_feed(now=None):
-    author = Account(subdomain="harry",
+    author = Account(subdomain="potter",
                      email="potter@motherfuckingsorcerer.com")\
                      .save(db=db)
     if not now:
         now = dt.now()
-    return Feed(title="test",
+    return Feed(title="pics",
              links=[{"href" : "http://www.google.com",
                        "rel" : "self"},
                        {"href" : "http://www.yahoo.com"}],
             updated=now,
-            author=author)
+            author=author,
+            url="/potter/private/pics/posts")

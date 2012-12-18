@@ -185,7 +185,7 @@ class Feed(Base):
 
     def __init__(self,
                  title=None,
-                 prefix="",
+                 url="",
                  db=None,
                  links=None,
                  updated=None,
@@ -242,13 +242,6 @@ class Feed(Base):
 
 
     @property
-    def url(self):
-        assert self.title, "feeds must have a title"
-        escaped = urllib.pathname2url(self.title.replace(" ", "-"))
-        return path.join(self.prefix, escaped)
-
-
-    @property
     def updated(self):
         return dateutil.parser.parse(self.meta["updated"])
     
@@ -264,8 +257,10 @@ class Feed(Base):
     def save(self, db=None):
         if db:
             self.db = db
+        assert self.url.startswith("/" + self.author.subdomain), "url %s doesn't start with subdomain of author: %s" % (self.url, self.author.subdomain)
         assert self.db, "You must provide a db instance to the model constructor to save."
         assert self.title, "Feeds require a title."
+        assert self.url.endswith("/posts")
         self.db.set(self.url + ".json", self.json)
         return self
 
