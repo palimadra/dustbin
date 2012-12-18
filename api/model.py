@@ -157,7 +157,12 @@ class Account(Base):
 
     @property
     def url(self):
-        return "/" + self.subdomain
+        return Account.get_url(self.subdomain)
+
+
+    @staticmethod
+    def get_url(subdomain):
+        return "/" + subdomain
 
 
     @staticmethod
@@ -219,6 +224,22 @@ class Feed(Base):
             self.entries = [entry for entry in self.entries if entry["id"] != id]
         else:
             raise Exception("Post not found")
+
+
+    @property
+    def author(self):
+        url = Account.get_url(self.meta["author"]["subdomain"])
+        return Account(db=self.db).load(url)
+
+
+    @author.setter
+    def author(self, account):
+        if account:
+                  self.meta["author"] = {"subdomain" : account.subdomain,
+                                         "email" : account.email}
+        else:
+            self.meta["author"] = None
+
 
     @property
     def url(self):

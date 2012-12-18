@@ -46,13 +46,13 @@ def test_feed_json():
     assert entry["link"] == p.url
     assert entry["updated"] == strftime("%Y-%m-%d %H:%M:%S",
                                         p.date.utctimetuple())
-    assert obj["author"]["name"] == "harry"
+    assert obj["author"]["subdomain"] == "harry"
     assert obj["author"]["email"] == "potter@motherfuckingsorcerer.com"
 
 
 def test_author():
     f = create_feed()
-    assert f.meta["author"]["name"] == "harry"
+    assert f.meta["author"]["subdomain"] == "harry"
     assert f.meta["author"]["email"] == "potter@motherfuckingsorcerer.com"
 
 
@@ -77,6 +77,13 @@ def test_feed_url():
     assert f.url == expect, "url was %s expected %s" % (f.url, expect)
 
 
+def test_links():
+    """
+    test that the links generated are correct.
+    """
+    assert False
+
+
 def create_feed(now=None):
     author = Account(subdomain="harry",
                      email="potter@motherfuckingsorcerer.com")\
@@ -89,4 +96,3 @@ def create_feed(now=None):
                        {"href" : "http://www.yahoo.com"}],
             updated=now,
             author=author)
-
