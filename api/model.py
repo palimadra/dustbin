@@ -122,6 +122,7 @@ class Post(Base):
         assert self.db, "You must provide a db instance to the model constructor to save."
         self.db.set(self.url + ".json", self.json)
         self.db.set(self.url + ".html", self.fragment)
+        return self
 
 
     def generate_filename(self, title, content, date):
@@ -151,6 +152,7 @@ class Account(Base):
         #TODO: always save to the url without .json extension as a default, only add json extension
         # if there are multiple representation possibilities.
         self.db.set(self.url, self.json)
+        return self
 
 
     @property
@@ -194,9 +196,6 @@ class Feed(Base):
 
         if not updated:
             updated = dt.now()
-
-        if not author:
-            author = {}
 
         if not title:
             title = "feed"
@@ -245,5 +244,7 @@ class Feed(Base):
         if db:
             self.db = db
         assert self.db, "You must provide a db instance to the model constructor to save."
+        assert self.title, "Feeds require a title."
         self.db.set(self.url + ".json", self.json)
+        return self
 

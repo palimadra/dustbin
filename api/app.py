@@ -62,14 +62,14 @@ class NewPostHandler(BaseHandler):
         post.prefix = self.request.uri
         post.save(db=self.db)
 
-#        url = Feed.get_url(post.prefix)
-#        try:
-#            feed = Feed(db=self.db).load(url + '.json')
-#        except:
-#            feed == Feed(db=self.db,
-#                         prefix=prefix,
-#                         author=self.current_user)
-#            feed.save()
+        url = Feed.get_url(post.prefix)
+        try:
+            feed = Feed(db=self.db).load(url + '.json')
+        except:
+            feed == Feed(db=self.db,
+                         prefix=prefix,
+                         author=self.current_user)
+            feed.save()
                          
         self.set_header("Location", post.url)
         self.set_status(201)

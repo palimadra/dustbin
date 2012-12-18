@@ -50,6 +50,12 @@ def test_feed_json():
     assert obj["author"]["email"] == "potter@motherfuckingsorcerer.com"
 
 
+def test_author():
+    f = create_feed()
+    assert f.meta["author"]["name"] == "harry"
+    assert f.meta["author"]["email"] == "potter@motherfuckingsorcerer.com"
+
+
 def test_load_from_db():
     """
     Make sure we can save and rehydrate
@@ -72,6 +78,9 @@ def test_feed_url():
 
 
 def create_feed(now=None):
+    author = Account(subdomain="harry",
+                     email="potter@motherfuckingsorcerer.com")\
+                     .save(db=db)
     if not now:
         now = dt.now()
     return Feed(title="test",
@@ -79,6 +88,5 @@ def create_feed(now=None):
                        "rel" : "self"},
                        {"href" : "http://www.yahoo.com"}],
             updated=now,
-            author = {"name" : "harry",
-                       "email" : "potter@motherfuckingsorcerer.com"})
+            author=author)
 

@@ -94,6 +94,7 @@ class FeedTest(helpers.BaseTest):
         response = self.fetch(helpers.url("/feed"), headers=headers)
         feed = model.Feed().load("/feed", db=db)
         assert feed.json == response.body
+        assert len(feed.entries) == 1
 
         #add another post
         post, created = self.create_post()
