@@ -40,6 +40,8 @@ def test_update_account():
     
 
 def test_account_url():
-    assert False
+
+    a = Account(email="test", subdomain="test")
+    assert a.url == "/test"
 
 
