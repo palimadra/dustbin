@@ -19,7 +19,8 @@ def get_user_cookie(secret=None, name=None, value=None):
         name = "user"
 
     if not value:
-        value = EMAIL
+        a = model.Account(subdomain=SUBDOMAIN, email=EMAIL)
+        value = a.url
     
     return web.create_signed_value(secret, name, value)
 

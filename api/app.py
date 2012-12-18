@@ -5,7 +5,7 @@ import tornado.httpserver
 import tornado.ioloop
 import tornado.options
 import tornado.web
-from dustbin.api.model import Post, Feed
+from dustbin.api.model import Post, Feed, Account
 
 #(?:/?$)?|
 urlpatterns = {
@@ -48,9 +48,9 @@ class BaseHandler(tornado.web.RequestHandler):
         return self.application.db
 
     def get_current_user(self):
-        user_id = self.get_secure_cookie("user")
-        if not user_id: return None
-        return self.db.get(user_id)
+        accounturl = self.get_secure_cookie("user")
+        if not accounturl: return None
+        return Account().load(accounturl, db=self.db)
 
 
 class NewPostHandler(BaseHandler):

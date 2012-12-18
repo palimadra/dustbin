@@ -10,8 +10,9 @@ db = config.get_db()
 username = helpers.SUBDOMAIN
 
 def setUp():
-    db.set(helpers.EMAIL, helpers.SUBDOMAIN)
     db.open()
+    a = model.Account(subdomain=helpers.SUBDOMAIN, email=helpers.EMAIL)
+    a.save(db=db)
 
 def tearDown():
     db.clear()
@@ -91,16 +92,16 @@ class FeedTest(helpers.BaseTest):
         
         post, created = self.create_post()
         headers = helpers.set_user_cookie(HTTPHeaders({"Content-Type" : "application/json"}))
-        response = self.fetch(helpers.url("/feed"), headers=headers)
-        feed = model.Feed().load("/feed", db=db)
+        response = self.fetch(helpers.url("/posts"), headers=headers)
+        feed = model.Feed().load("/posts", db=db)
         assert feed.json == response.body
         assert len(feed.entries) == 1
 
         #add another post
         post, created = self.create_post()
-        response = self.fetch(helpers.url("/feed"), headers=headers)
+        response = self.fetch(helpers.url("/posts"), headers=headers)
         assert feed.json != response.body
-        feed = model.Feed().load("/feed", db=db)
+        feed = model.Feed().load("/posts", db=db)
         assert feed.json == response.body
 
 
