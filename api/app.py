@@ -5,15 +5,8 @@ import tornado.httpserver
 import tornado.ioloop
 import tornado.options
 import tornado.web
-from dustbin.api.model import Post, Feed, Account
-
-#(?:/?$)?|
-urlpatterns = {
-    "NewPostHandler" : r"/(?P<subdomain>[^/]+)/(?:private|public)/(?:(?P<lense>[^/]+)/posts|posts)/?$",
-    "PostsHandler" : r"/(?P<subdomain>[^/]+)/(?:private|public)/(?:posts|[^/]+/posts)/.+",
-    "FeedsHandler" : r"/(?P<subdomain>[^/]+)/(?:private|public)/(?:feed|[^/]+/feed)(?:\.json)?/?$",
-}
-
+from model import Post, Feed, Account
+from urls import urlpatterns
 
 def authorized(fn):
     def wrapped(*args, **kwargs):
@@ -32,7 +25,7 @@ class Application(tornado.web.Application):
     def __init__(self):
         handlers = [
             (urlpatterns["PostsHandler"], PostsHandler),
-            (urlpatterns["NewPostHandler"], NewPostHandler),
+            (urlpatterns["FeedHandler"], FeedHandler),
         ]
         settings = config.appsettings
         tornado.web.Application.__init__(self, handlers, **settings)
@@ -53,27 +46,21 @@ class BaseHandler(tornado.web.RequestHandler):
         return Account().load(accounturl, db=self.db)
 
 
-class NewPostHandler(BaseHandler):
+class FeedHandler(BaseHandler):
 
     @authorized
     @tornado.web.authenticated
     def post(self, subdomain, lense=None):
         post = Post(**json.loads(self.request.body))
         post.prefix = self.request.uri
-        post.save(db=self.db)
-
-        try:
-            feed = Feed(db=self.db).load(post.prefix)
-        except:
-            title = lense or subdomain
-            feed = Feed(db=self.db,
-                        url=post.prefix,
-                        author=self.current_user,
-                        title=title)
-            feed.save()
-                         
+        post.save(self.current_user, db=self.db)
         self.set_header("Location", post.url)
         self.set_status(201)
+
+    @authorized
+    @tornado.web.authenticated
+    def get(self, subdomain, lense=None):
+        return self.write(self.db.get(self.request.uri))
         
 
 class PostsHandler(BaseHandler):

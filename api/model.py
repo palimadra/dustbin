@@ -8,10 +8,12 @@ import urllib
 import os.path as path
 import types
 
+
 from bleach import clean
 from markdown2 import markdown
 from datetime import datetime as dt
 from time import strftime
+from urls import urlpatterns
 
 
 subdomainre = re.compile("^[a-zA-Z0-9]+$")
@@ -63,8 +65,27 @@ class Base(object):
     def json(self):
         return json.dumps(self.meta)
 
-            
+    @property
+    def author(self):
+        url = Account.get_url(self.meta["author"]["subdomain"])
+        return Account(db=self.db).load(url)
 
+    @author.setter
+    def author(self, account):
+
+        if account and type(account) == Account:
+            self.meta["author"] = {"subdomain" : account.subdomain,
+                                   "email" : account.email}
+
+        # this is a dictionary format.
+        elif account:
+            self.meta["author"] = account
+            
+        else:
+            self.meta["author"] = None
+
+
+            
 class Post(Base):
 
     def __init__(self,
@@ -73,7 +94,8 @@ class Post(Base):
                  title = "",
                  date = None,
                  filename = "",
-                 db=None):
+                 db=None,
+                 author = None):
         
         if not date:
             date = dt.now()
@@ -116,12 +138,17 @@ class Post(Base):
                      strip=True)
 
 
-    def save(self, db=None):
+    def save(self, author, db=None):
         if db:
             self.db = db
         assert self.db, "You must provide a db instance to the model constructor to save."
         self.db.set(self.url + ".json", self.json)
         self.db.set(self.url + ".html", self.fragment)
+        import pdb; pdb.set_trace()
+        feed = Feed.get(self.prefix, self.author, db)
+        feed.add_post(self)
+        feed.save()
+        
         return self
 
 
@@ -227,21 +254,6 @@ class Feed(Base):
 
 
     @property
-    def author(self):
-        url = Account.get_url(self.meta["author"]["subdomain"])
-        return Account(db=self.db).load(url)
-
-
-    @author.setter
-    def author(self, account):
-        if account:
-                  self.meta["author"] = {"subdomain" : account.subdomain,
-                                         "email" : account.email}
-        else:
-            self.meta["author"] = None
-
-
-    @property
     def updated(self):
         return dateutil.parser.parse(self.meta["updated"])
     
@@ -263,4 +275,20 @@ class Feed(Base):
         assert self.url.endswith("/posts")
         self.db.set(self.url + ".json", self.json)
         return self
+
+
+    @staticmethod
+    def get(url, author, db):
+        try:
+            feed = Feed(db=db).load(url)
+        except:
+            pattern = re.compile(urlpatterns["FeedHandler"])
+            groups = pattern.match(url)
+            title = groups.groupdict()['subdomain']
+            feed = Feed(db=db,
+                        url=url,
+                        author=author,
+                        title=title)
+        return feed
+
 

@@ -23,7 +23,7 @@ def tearDown():
 class NewPostTest(helpers.BaseTest):
     
     def test_post(self):
-        post, response = self.create_post()
+        post, response = self.create_post(db=db)
         assert response.headers["Location"] == post.url,\
             "url was %s expected %s" % (response.headers["Location"], post.url)
         assert response.code == 201
@@ -37,7 +37,7 @@ class NewPostTest(helpers.BaseTest):
         versus post /sean/posts/public/computers
         """
         
-        post, response = self.create_post(uri="/facebook/posts")
+        post, response = self.create_post(uri="/facebook/posts", db=db)
         url = response.headers["Location"]
         assert url.startswith(helpers.url("/facebook/posts")), "post was created in the wrong place"
         headers = helpers.set_user_cookie(HTTPHeaders({"Content-Type" : "application/json"}))
@@ -59,7 +59,7 @@ class ReadPostTest(helpers.BaseTest):
     
     def test_get_json(self):
 
-        post, created = self.create_post()
+        post, created = self.create_post(db=db)
         url = created.headers["Location"]
         headers = helpers.set_user_cookie(HTTPHeaders({"Content-Type" : "application/json"}))
         response = self.fetch(url, headers=headers)
@@ -68,7 +68,7 @@ class ReadPostTest(helpers.BaseTest):
 
     def test_get_html(self):
         
-        post, created = self.create_post()
+        post, created = self.create_post(db=db)
         url = created.headers["Location"]
         headers = helpers.set_user_cookie(HTTPHeaders({"Content-Type" : "text/html"}))
         response = self.fetch(url, headers=headers)
@@ -90,15 +90,15 @@ class FeedTest(helpers.BaseTest):
         #TODO: posting, deleting or updating a post should update the lense
         # feed and the public/private feed.
         
-        post, created = self.create_post()
+        post, created = self.create_post(db=db)
         headers = helpers.set_user_cookie(HTTPHeaders({"Content-Type" : "application/json"}))
         response = self.fetch(helpers.url("/posts"), headers=headers)
-        feed = model.Feed().load("/posts", db=db)
+        feed = model.Feed.get(helpers.url("/posts"), db)
         assert feed.json == response.body
         assert len(feed.entries) == 1
 
         #add another post
-        post, created = self.create_post()
+        post, created = self.create_post(db=db)
         response = self.fetch(helpers.url("/posts"), headers=headers)
         assert feed.json != response.body
         feed = model.Feed().load("/posts", db=db)

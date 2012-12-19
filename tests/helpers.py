@@ -46,11 +46,17 @@ class BaseTest(AsyncHTTPTestCase):
         return Application()
 
 
-    def create_post(self, uri="/posts", post=None):
+    def create_post(self, uri="/posts", post=None, db=None):
         if not post:
+            #todo: this assumes the account is created, should handle
+            # if it doesn't
+            accounturl = model.Account.get_url(SUBDOMAIN)
+            account = model.Account(db=db).load(accounturl)
+
             post = model.Post("text is something like this.\nplus a paragraph",
                               title="title here",
-                              prefix = url(uri))
+                              prefix = url(uri),
+                              author=account)
     
         headers = set_user_cookie(HTTPHeaders({"Content-Type" : "application/json"}))
         created = self.fetch(url(uri),

@@ -21,7 +21,7 @@ def tearDown():
 class UrlTests(helpers.BaseTest):
 
     def test_new_post_urls(self):
-        reg = re.compile(urlpatterns["NewPostHandler"])
+        reg = re.compile(urlpatterns["FeedHandler"])
         assert reg.match("/sean/private/posts")
         assert reg.match("/sean/private/posts/")
         assert reg.match("/sean/private/facebook/posts")
@@ -46,15 +46,5 @@ class UrlTests(helpers.BaseTest):
     def test_post_urls(self):
         reg = re.compile(urlpatterns["PostsHandler"])
         assert reg.match("/sean/private/facebook/posts/11/12/2012/test-this")
-        
-    def test_feed_urls(self):
-        reg = re.compile(urlpatterns["FeedsHandler"])
-        assert reg.match("/sean/private/feed")
-        assert reg.match("/sean/private/feed.json")
-        assert reg.match("/sean/private/facebook/feed")
-        assert reg.match("/sean/public/facebook/feed.json")
 
-        assert not reg.match("/sean/public/feed.dust")
-        assert not reg.match("/sean/private/test/this/feed")
-        assert not reg.match("/sean/public/test/this/feed.json")
         
