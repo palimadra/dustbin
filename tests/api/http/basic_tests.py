@@ -48,11 +48,15 @@ class NewPostTest(helpers.BaseTest):
         response = self.fetch(url, headers=headers)
         assert response.body == post.fragment
 
+
     def test_lense_named_posts(self):
         assert False
 
+
     def test_bad_content_type(self):
-        assert False
+        post, created = self.create_post(db=db, contenttype="text/html")
+        assert created.code == 500, "Only application/json should be supported for creating a post."
+
 
 
 class ReadPostTest(helpers.BaseTest):

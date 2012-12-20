@@ -51,12 +51,15 @@ class FeedHandler(BaseHandler):
     @authorized
     @tornado.web.authenticated
     def post(self, subdomain, lense=None):
-        post = Post(**json.loads(self.request.body))
-        post.prefix = self.request.uri
-        post.author = self.current_user
-        post.save(db=self.db)
-        self.set_header("Location", post.url)
-        self.set_status(201)
+        if self.request.headers['Content-type'] == 'application/json':
+            post = Post(**json.loads(self.request.body))
+            post.prefix = self.request.uri
+            post.author = self.current_user
+            post.save(db=self.db)
+            self.set_header("Location", post.url)
+            self.set_status(201)
+        else:
+            self.send_error(500)
 
     @authorized
     @tornado.web.authenticated

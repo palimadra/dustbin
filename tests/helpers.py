@@ -51,7 +51,7 @@ class BaseTest(AsyncHTTPTestCase):
         return Application()
 
 
-    def create_post(self, uri="/posts", post=None, db=None):
+    def create_post(self, uri="/posts", post=None, db=None, contenttype="application/json"):
         if not post:
             #todo: this assumes the account is created, should handle
             # if it doesn't
@@ -63,7 +63,7 @@ class BaseTest(AsyncHTTPTestCase):
                               author=account,
                               db=db)
     
-        headers = set_user_cookie(HTTPHeaders({"Content-Type" : "application/json"}))
+        headers = set_user_cookie(HTTPHeaders({"Content-Type" : contenttype}))
         created = self.fetch(url(uri),
                              method="POST",
                              body=post.json,
