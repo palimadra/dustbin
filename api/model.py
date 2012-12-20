@@ -144,7 +144,6 @@ class Post(Base):
         assert self.db, "You must provide a db instance to the model constructor to save."
         self.db.set(self.url + ".json", self.json)
         self.db.set(self.url + ".html", self.fragment)
-        import pdb; pdb.set_trace()
         feed = Feed.get(self.prefix, self.author, db)
         feed.add_post(self)
         feed.save()
@@ -219,7 +218,6 @@ class Feed(Base):
                  author=None,
                  entries=None):
 
-        
         if not entries:
             entries = []
 
@@ -273,7 +271,7 @@ class Feed(Base):
         assert self.db, "You must provide a db instance to the model constructor to save."
         assert self.title, "Feeds require a title."
         assert self.url.endswith("/posts")
-        self.db.set(self.url + ".json", self.json)
+        self.db.set(self.url, self.json)
         return self
 
 

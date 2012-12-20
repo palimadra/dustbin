@@ -56,7 +56,8 @@ class BaseTest(AsyncHTTPTestCase):
             post = model.Post("text is something like this.\nplus a paragraph",
                               title="title here",
                               prefix = url(uri),
-                              author=account)
+                              author=account,
+                              db=db)
     
         headers = set_user_cookie(HTTPHeaders({"Content-Type" : "application/json"}))
         created = self.fetch(url(uri),

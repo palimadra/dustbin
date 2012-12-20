@@ -2,6 +2,7 @@ import dustbin.config as config
 import dustbin.api.model as model
 import dustbin.tests.helpers as helpers
 import tornado.web as web
+import json
 
 from nose.tools import *
 from tornado.httputil import HTTPHeaders
@@ -93,16 +94,17 @@ class FeedTest(helpers.BaseTest):
         post, created = self.create_post(db=db)
         headers = helpers.set_user_cookie(HTTPHeaders({"Content-Type" : "application/json"}))
         response = self.fetch(helpers.url("/posts"), headers=headers)
-        feed = model.Feed.get(helpers.url("/posts"), db)
-        assert feed.json == response.body
+        feed = model.Feed.get(helpers.url("/posts"), post.author, db)
+        loaded = model.Feed(**json.loads(response.body))
+        assert feed == loaded
         assert len(feed.entries) == 1
 
         #add another post
         post, created = self.create_post(db=db)
         response = self.fetch(helpers.url("/posts"), headers=headers)
         assert feed.json != response.body
-        feed = model.Feed().load("/posts", db=db)
-        assert feed.json == response.body
+        feed = model.Feed().load(helpers.url("/posts"), db=db)
+        assert feed == model.Feed(**json.loads(response.body))
 
 
     def test_update_post(self):
