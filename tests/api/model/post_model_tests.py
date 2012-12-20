@@ -10,13 +10,20 @@ import urllib
 import json
 
 db = config.get_db()
+account = create_account(db)
+prefix = "/sean/private/posts"
+
+def tearDown():
+    db.clear()
+    db.close()
+
 
 def test_post_url():
 
     content = "this is a short post"
     ordinal = 734845
     date = dt.fromordinal(ordinal)
-    post = Post(content, prefix="sean", date=date)
+    post = Post(content, prefix="sean", date=date, author=account)
     expected = "sean/12/8/2012/" + urllib.pathname2url(hashlib.sha256(content + post.meta["date"]).digest())
     assert post.url == expected, "url was  %s expected %s" % (post.url, expected)
 
@@ -25,10 +32,10 @@ def test_post_filename():
 
     content = "some stuff in here"
     title = "this is awesome"
-    post = Post(content)
+    post = Post(content, prefix=prefix, author=account)
     expected = urllib.pathname2url(hashlib.sha256(content + post.meta["date"]).digest())
     assert post.filename == expected, "filename is %s expected %s" % (post.filename, expected)
-    post = Post(content, title=title)
+    post = Post(content, prefix=prefix, title=title, author=account)
     assert post.filename == urllib.pathname2url(title.replace(" ", "-"))
 
 
@@ -36,9 +43,9 @@ def test_post_title():
 
     content = "sweet content right here"
     title = "awesome title"
-    post = Post(content)
+    post = Post(content, prefix=prefix, author=account)
     assert post.title == ""
-    post = Post(content, title=title)
+    post = Post(content, prefix=prefix, title=title, author=account)
     assert post.title == title
 
 
@@ -50,7 +57,7 @@ def test_post_save():
     3. create an html fragment entry at the url.html
     """
     content = "check it"
-    post = Post(content=content, db=db)
+    post = Post(content=content, prefix=prefix, db=db, author=account)
     post.save()
     newpost = Post(db=db).load(post.url + ".json")
     assert newpost == post
@@ -64,7 +71,9 @@ def test_post_json():
     """
     content = "check it"
     post = Post(content=content,
-                title="title here")
+                title="title here",
+                author=account,
+                prefix=prefix)
     meta = json.loads(post.json)
     for key, value in meta.items():
         assert post.meta[key] == value, "meta value for %s was %s expected %s." % (key, meta[key], value)
@@ -77,6 +86,8 @@ def test_load_from_db():
     """
     post = Post(content="test this out",
                 title="super awesome title",
+                author = account,
+                prefix=prefix,
                 db=db)
     post.save()
     saved = Post(db=db).load(post.url + ".json")

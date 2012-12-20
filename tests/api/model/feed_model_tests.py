@@ -63,7 +63,7 @@ def test_load_from_db():
     """
     f = create_feed()
     f.save(db=db)
-    created = Feed(db=db).load(f.url + ".json")
+    created = Feed(db=db).load(f.url)
 
 
 def test_links():

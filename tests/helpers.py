@@ -11,6 +11,11 @@ from tornado.httputil import HTTPHeaders
 EMAIL = "sean.fioritto@test.com"
 SUBDOMAIN = "sean"
 
+def create_account(db):
+    account = model.Account(subdomain=SUBDOMAIN, email=EMAIL)
+    return account.save(db=db)
+
+
 def get_user_cookie(secret=None, name=None, value=None):
     if not secret:
         secret = config.appsettings["cookie_secret"]
@@ -50,8 +55,7 @@ class BaseTest(AsyncHTTPTestCase):
         if not post:
             #todo: this assumes the account is created, should handle
             # if it doesn't
-            accounturl = model.Account.get_url(SUBDOMAIN)
-            account = model.Account(db=db).load(accounturl)
+            account = create_account(db)
 
             post = model.Post("text is something like this.\nplus a paragraph",
                               title="title here",
@@ -65,5 +69,4 @@ class BaseTest(AsyncHTTPTestCase):
                              body=post.json,
                              headers=headers)
         return post, created
-
 

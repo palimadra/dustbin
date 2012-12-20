@@ -138,13 +138,13 @@ class Post(Base):
                      strip=True)
 
 
-    def save(self, author, db=None):
+    def save(self, db=None):
         if db:
             self.db = db
         assert self.db, "You must provide a db instance to the model constructor to save."
         self.db.set(self.url + ".json", self.json)
         self.db.set(self.url + ".html", self.fragment)
-        feed = Feed.get(self.prefix, self.author, db)
+        feed = Feed.get(self.prefix, self.author, self.db)
         feed.add_post(self)
         feed.save()
         

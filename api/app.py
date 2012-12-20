@@ -53,7 +53,8 @@ class FeedHandler(BaseHandler):
     def post(self, subdomain, lense=None):
         post = Post(**json.loads(self.request.body))
         post.prefix = self.request.uri
-        post.save(self.current_user, db=self.db)
+        post.author = self.current_user
+        post.save(db=self.db)
         self.set_header("Location", post.url)
         self.set_status(201)
 
