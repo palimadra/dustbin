@@ -41,16 +41,12 @@ class NewPostTest(helpers.BaseTest):
         post, response = self.create_post(uri="/facebook/posts", db=db)
         url = response.headers["Location"]
         assert url.startswith(helpers.url("/facebook/posts")), "post was created in the wrong place"
-        headers = helpers.set_user_cookie(HTTPHeaders({"Content-Type" : "application/json"}))
+        headers = helpers.set_user_cookie(contenttype="application/json")
         response = self.fetch(url, headers=headers)
         assert response.body == post.json
-        headers = helpers.set_user_cookie(HTTPHeaders({"Content-Type" : "text/html"}))
+        headers = helpers.set_user_cookie()
         response = self.fetch(url, headers=headers)
         assert response.body == post.fragment
-
-
-    def test_lense_named_posts(self):
-        assert False
 
 
     def test_bad_content_type(self):
@@ -66,7 +62,7 @@ class ReadPostTest(helpers.BaseTest):
 
         post, created = self.create_post(db=db)
         url = created.headers["Location"]
-        headers = helpers.set_user_cookie(HTTPHeaders({"Content-Type" : "application/json"}))
+        headers = helpers.set_user_cookie(contenttype="application/json")
         response = self.fetch(url, headers=headers)
         assert response.body == post.json
         
@@ -75,7 +71,7 @@ class ReadPostTest(helpers.BaseTest):
         
         post, created = self.create_post(db=db)
         url = created.headers["Location"]
-        headers = helpers.set_user_cookie(HTTPHeaders({"Content-Type" : "text/html"}))
+        headers = helpers.set_user_cookie()
         response = self.fetch(url, headers=headers)
         assert response.body == post.fragment
 
@@ -84,7 +80,11 @@ class ReadPostTest(helpers.BaseTest):
         """
         Make sure we handle requests for posts that have a trailing slash.
         """
-        assert False
+        post, created = self.create_post(db=db)
+        url = created.headers["Location"]
+        headers = helpers.set_user_cookie()
+        response = self.fetch(url + "/", headers=headers)
+        assert response.body == post.fragment, "Post urls should support trailing slash"
 
 
 class FeedTest(helpers.BaseTest):
@@ -96,7 +96,7 @@ class FeedTest(helpers.BaseTest):
         # feed and the public/private feed.
         
         post, created = self.create_post(db=db)
-        headers = helpers.set_user_cookie(HTTPHeaders({"Content-Type" : "application/json"}))
+        headers = helpers.set_user_cookie(contenttype="application/json")
         response = self.fetch(helpers.url("/posts"), headers=headers)
         feed = model.Feed.get(helpers.url("/posts"), post.author, db)
         loaded = model.Feed(**json.loads(response.body))

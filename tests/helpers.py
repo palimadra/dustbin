@@ -30,7 +30,8 @@ def get_user_cookie(secret=None, name=None, value=None):
     return web.create_signed_value(secret, name, value)
 
 
-def set_user_cookie(headers, secret=None, name=None, value=None):
+def set_user_cookie(secret=None, name=None, value=None, contenttype="text/html"):
+    headers = HTTPHeaders({"Content-Type" : contenttype})
     headers.add("Cookie", "user=%s" % get_user_cookie(secret, name, value))
     return headers
 
@@ -63,7 +64,7 @@ class BaseTest(AsyncHTTPTestCase):
                               author=account,
                               db=db)
     
-        headers = set_user_cookie(HTTPHeaders({"Content-Type" : contenttype}))
+        headers = set_user_cookie(contenttype=contenttype)
         created = self.fetch(url(uri),
                              method="POST",
                              body=post.json,

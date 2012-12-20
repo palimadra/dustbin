@@ -73,6 +73,8 @@ class PostsHandler(BaseHandler):
     @tornado.web.authenticated
     def get(self, subdomain):
         url = self.request.uri
+        if url.endswith("/"):
+            url = url[:-1]
         if self.request.headers["Content-type"] == "text/html":
             if not url.endswith(".html"):
                 url = url + ".html"
