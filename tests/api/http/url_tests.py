@@ -20,31 +20,33 @@ def tearDown():
 
 class UrlTests(helpers.BaseTest):
 
-    def test_new_post_urls(self):
-        reg = re.compile(urlpatterns["FeedHandler"])
-        assert reg.match("/sean/private/posts")
-        assert reg.match("/sean/private/posts/")
-        assert reg.match("/sean/private/facebook/posts")
-        assert reg.match("/sean/private/facebook/posts/")
-        assert reg.match("/sean/public/posts")
-        assert reg.match("/sean/public/posts/")
-        assert reg.match("/sean/public/facebook/posts")
-        assert reg.match("/sean/public/facebook/posts/")
+    def test_feed_urls(self):
+        reg = re.compile(urlpatterns['FeedHandler'])
+        assert reg.match('/sean/feed')
+        assert reg.match('/sean/feed/')
+        assert reg.match('/sean/private/posts')
+        assert reg.match('/sean/private/posts/')
+        assert reg.match('/sean/private/facebook/posts')
+        assert reg.match('/sean/private/facebook/posts/')
+        assert reg.match('/sean/public/posts')
+        assert reg.match('/sean/public/posts/')
+        assert reg.match('/sean/public/facebook/posts')
+        assert reg.match('/sean/public/facebook/posts/')
         
-        assert not reg.match("/sean/private/facebook/posts/bam")
-        assert not reg.match("/sean/private/facebook/posts/bam/")
-        assert not reg.match("/sean/private/facebook/posts/11/12/2012")
-        assert not reg.match("/sean/private/facebook/11")
-        assert not reg.match("/sean/public/facebook/posts/bam")
-        assert not reg.match("/sean/public/facebook/posts/bam/")
-        assert not reg.match("/sean/public/facebook/posts/11/12/2012")
-        assert not reg.match("/sean/")
-        assert not reg.match("/sean/public")
-        assert not reg.match("/sean/public/pos")
-        assert not reg.match("/sean/public/posts/11/12/2014")
+        assert not reg.match('/sean/private/facebook/posts/bam')
+        assert not reg.match('/sean/private/facebook/posts/bam/')
+        assert not reg.match('/sean/private/facebook/posts/11/12/2012')
+        assert not reg.match('/sean/private/facebook/11')
+        assert not reg.match('/sean/public/facebook/posts/bam')
+        assert not reg.match('/sean/public/facebook/posts/bam/')
+        assert not reg.match('/sean/public/facebook/posts/11/12/2012')
+        assert not reg.match('/sean/')
+        assert not reg.match('/sean/public')
+        assert not reg.match('/sean/public/pos')
+        assert not reg.match('/sean/public/posts/11/12/2014')
 
     def test_post_urls(self):
-        reg = re.compile(urlpatterns["PostsHandler"])
-        assert reg.match("/sean/private/facebook/posts/11/12/2012/test-this")
+        reg = re.compile(urlpatterns['PostsHandler'])
+        assert reg.match('/sean/private/facebook/posts/11/12/2012/test-this')
 
         

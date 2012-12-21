@@ -25,8 +25,14 @@ except Exception as e:
         def get(self, key):
             return self.dict[key]
 
+        def get_bulk(self, keys):
+            return [self.dict[key] for key in keys]
+
         def set(self, key, value):
             self.dict[key] = value
+
+        def remove(self, key):
+            del self.dict[key]
 
         def open(self):
             pass
