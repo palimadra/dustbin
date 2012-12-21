@@ -120,7 +120,28 @@ class FeedTest(helpers.BaseTest):
 
 
     def test_lense_feed(self):
-        assert False
+        tearDown()
+        setUp()
+        post, created = self.create_post(db=db)
+        headers = helpers.set_user_cookie(contenttype="application/json")
+        response = self.fetch(helpers.url("/facebook/posts"), headers=headers)
+        feed = model.Feed.get(helpers.url("/facebook/posts"), post.author, db)
+        loaded = model.Feed(**json.loads(response.body))
+        assert feed == loaded
+        assert len(feed.entries) == 1
+        topfeed = model.Feed.get(helpers.url("/posts"), post.author, db)
+        assert len(topfeed.entries) == 1
+
+
+        #add another post
+        post, created = self.create_post(db=db)
+        response = self.fetch(helpers.url("/facebook/posts"), headers=headers)
+        assert feed.json != response.body
+        feed = model.Feed().load(helpers.url("/facebook/posts"), db=db)
+        assert feed == model.Feed(**json.loads(response.body))
+        topfeed = topfeed.load(topfeed.url)
+        assert len(topfeed.entries) == 2
+
         
 
 class AccountTest(helpers.BaseTest):
