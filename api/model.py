@@ -20,19 +20,21 @@ subdomainre = re.compile('^[a-zA-Z0-9]+$')
 
 class Base(object):
 
-    def init(self, kwargs):
-        #TODO: can you get rid of this?
-        if kwargs.has_key('self'):
-            del kwargs['self']
-            
-        Base.__init__(self, **kwargs)
-
     def update(self):
         self.load(self.url)
+    
+    def __init__(*args, **kwargs):
         
-    def __init__(self, db=None, **kwargs):
+        if kwargs.has_key('self'):
+            del kwargs['self']
+
+        self = args[0]
+
         self.meta = {}
-        self.db = db
+        if kwargs.has_key('db'):
+            self.db = kwargs['db']
+        else:
+            self.db = None
         for key, value in kwargs.items():
             self.__setattr__(key, value)
 
@@ -105,7 +107,7 @@ class Lense(Base):
                  db=None,
                  author=None):
         
-        Base.init(self, locals())
+        Base.__init__(self, **locals())
 
     @property
     def feed(self):
@@ -166,7 +168,7 @@ class Post(Base):
         if not filename:
             filename = self.generate_filename(title, content, date.isoformat())
 
-        Base.init(self, locals())
+        Base.__init__(self, **locals())
 
 
     @property
@@ -261,7 +263,7 @@ class Author(Base):
         if not lenses:
             lenses = []
 
-        Base.init(self, locals())
+        Base.__init__(self, **locals())
         
 
     def save(self, db=None):
@@ -386,7 +388,7 @@ class Feed(Base):
         if not title:
             title = 'feed'
 
-        Base.init(self, locals())
+        Base.__init__(self, **locals())
 
 
     def add_post(self, post):
