@@ -18,7 +18,7 @@ subdomainre = re.compile('^[a-zA-Z0-9]+$')
 
 class Base(object):
 
-    """
+    '''
     This is basically a lightweight orm for a key value store. Everything
     in the meta property is serialized and stored in the key/value store
     as json. A model can also be rehydrated using just a string of json.
@@ -49,26 +49,41 @@ class Base(object):
           print 'do something here if you want'
           self.meta['name'] = value
     
-    """
-
+    '''
     
     def __init__(*args, **kwargs):
-        
+
+        # delete self so we don't try to set it later
         if kwargs.has_key('self'):
             del kwargs['self']
 
-        self = args[0]
+        if len(args) >= 1:
+            self = args[0]
+        else:
+            raise TypeError('You must pass in "self" to the init method')
 
         self.meta = {}
+
+        # Every model contains a reference to the
+        # db object. But it's only required to eventually
+        # persist to the database. Db is not stored in
+        # the meta object, so we have to explicitly set
+        # it here.
         if kwargs.has_key('db'):
             self.db = kwargs['db']
         else:
             self.db = None
+            
         for key, value in kwargs.items():
             self.__setattr__(key, value)
 
 
     def __getattr__(self, name):
+        '''
+        If a property isn't defined on the super class we
+        look in the meta object instead of on the base
+        class.
+        '''
         if self.meta.has_key(name):
             return self.meta[name]
         else:
@@ -90,6 +105,9 @@ class Base(object):
 
 
     def update(self):
+        '''
+        Refresh the object from the database
+        '''
         self.load(self.url)
 
 
@@ -105,6 +123,15 @@ class Base(object):
         assert self.db, 'No db instance. Provide a db instance when creating the model or as a keyword to this method'
         self.meta = json.loads(self.db.get(key))
         return self
+
+
+    @property
+    def url(self):
+        return self.meta['url']
+
+    @url.setter
+    def url(self, value):
+        self.meta['url'] = value
 
     @property
     def json(self):
@@ -139,7 +166,13 @@ class Lense(Base):
                  public=True,
                  db=None,
                  author=None):
-        
+        '''
+        Lenses are used to separate content by reader.
+        So you can create a lense called 'family' and then
+        only allow family members to read it.
+
+        Lenses have a feed that keeps track of posts.
+        '''
         Base.__init__(self, **locals())
 
     @property
@@ -155,11 +188,11 @@ class Lense(Base):
 
     @property
     def url(self):
-        pubpriv = "public"
+        pubpriv = 'public'
         if not self.public:
-            pubpriv = "private"
+            pubpriv = 'private'
             
-        return "/%s/%s/%s" % (self.subdomain, pubpriv, self.name)
+        return '/%s/%s/%s' % (self.subdomain, pubpriv, self.name)
 
 
     def save(self, db=None):
@@ -309,8 +342,7 @@ class Author(Base):
 
         #TODO: always save to the url without .json extension as a default, only add json extension
         # if there are multiple representation possibilities.
-
-        feed = Feed.get("/%s/feed" % self.subdomain, self, self.db)
+        feed = Feed.get('/%s/feed' % self.subdomain, self, self.db)
         self.feed = feed
         self.db.set(self.url, self.json)
         
