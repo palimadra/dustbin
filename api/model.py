@@ -8,20 +8,49 @@ import urllib
 import os.path as path
 import types
 
-
 from bleach import clean
 from markdown2 import markdown
 from datetime import datetime as dt
 from time import strftime
 from urls import urlpatterns
 
-
 subdomainre = re.compile('^[a-zA-Z0-9]+$')
 
 class Base(object):
 
-    def update(self):
-        self.load(self.url)
+    """
+    This is basically a lightweight orm for a key value store. Everything
+    in the meta property is serialized and stored in the key/value store
+    as json. A model can also be rehydrated using just a string of json.
+
+    Define what attributes your model supports by defining keyword
+    arguments in the __init__ function. Those will be automatically
+    added to the meta dictionary and then persisted in the database.
+    
+    If you want to override an attribute, create a property and that
+    property will be called instead, just be sure to set the value
+    you eventually want to persist on the meta object, e.g.:
+    
+    class Human(Base):
+
+       def __init__(self, name='', job=''):
+          if not job:
+             job = 'programmer'
+          assert name, "you must have a name to be human"
+          Base.__init__(self, **locals())
+
+       @property
+       def name(self):
+          print 'do something here if you want'
+          return self.meta['name']
+
+       @name.setter
+       def name(self, value):
+          print 'do something here if you want'
+          self.meta['name'] = value
+    
+    """
+
     
     def __init__(*args, **kwargs):
         
@@ -58,6 +87,10 @@ class Base(object):
             if other.meta[key] != value:
                 return False
         return True
+
+
+    def update(self):
+        self.load(self.url)
 
 
     def delete(self, db=None):
